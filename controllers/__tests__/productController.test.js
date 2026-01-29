@@ -72,6 +72,7 @@ describe("Product Controller", () => {
     };
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {})
   });
 
   // ============ createProductController Tests ============

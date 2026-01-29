@@ -50,6 +50,7 @@ describe('HomePage Component', () => {
     mockSetCart = jest.fn();
     useCart.mockReturnValue([mockCart, mockSetCart]);
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {})
   });
 
   test('renders_homePage_displaysProductsAndFilters', async () => {

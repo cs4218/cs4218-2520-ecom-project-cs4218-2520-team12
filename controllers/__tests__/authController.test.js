@@ -36,6 +36,7 @@ describe("Auth Controller", () => {
     jest.clearAllMocks();
     process.env.JWT_SECRET = "test-secret";
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {})
   });
 
   // ============ registerController Tests ============

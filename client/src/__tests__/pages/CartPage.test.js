@@ -86,6 +86,7 @@ describe('CartPage Component', () => {
     useAuth.mockReturnValue([mockAuth, mockSetAuth]);
 
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {})
   });
 
   test('renders_cartPage_displaysCartItems', () => {

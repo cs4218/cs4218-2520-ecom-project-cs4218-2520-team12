@@ -40,6 +40,7 @@ describe('CategoryProduct Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {})
   });
 
   test('renders_categoryProductPage_displaysLoading', () => {
