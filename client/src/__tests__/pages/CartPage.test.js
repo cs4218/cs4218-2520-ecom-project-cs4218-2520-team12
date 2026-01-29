@@ -474,6 +474,9 @@ describe('CartPage Component', () => {
     // Assert
     const payButton = screen.getByText('Make Payment');
     fireEvent.click(payButton);
+    await waitFor(() => {
+      expect(payButton).toBeDisabled();
+    });
   });
 
   test('handlePayment_error_setsLoadingFalse', async () => {
