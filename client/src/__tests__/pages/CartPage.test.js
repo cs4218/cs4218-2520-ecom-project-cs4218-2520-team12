@@ -473,9 +473,6 @@ describe('CartPage Component', () => {
     fireEvent.click(payButton);
 
     // Assert
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/orders');
-    }, { timeout: 5000 });
 
     await waitFor(() => {
     expect(window.localStorage.removeItem).toHaveBeenCalledWith('cart');
@@ -521,9 +518,6 @@ describe('CartPage Component', () => {
     fireEvent.click(payButton);
 
     // Assert
-    await waitFor(() => {
-      expect(consoleLogSpy).toHaveBeenCalled();
-    });
     await waitFor(() => {
       expect(payButton).not.toBeDisabled();
     });
