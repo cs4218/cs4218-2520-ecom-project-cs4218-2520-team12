@@ -475,9 +475,9 @@ describe('CartPage Component', () => {
     // Assert
 
     await waitFor(() => {
-
-    expect(mockSetCart).toHaveBeenCalledWith([]);
+    expect(window.localStorage.removeItem).toHaveBeenCalledWith('cart');
     })
+    
   });
 
   test('handlePayment_error_setsLoadingFalse', async () => {
