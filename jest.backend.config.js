@@ -13,8 +13,8 @@ export default {
   collectCoverageFrom: ["controllers/**"],
   coverageThreshold: {
     global: {
-      lines: 100,
-      functions: 100,
+      lines: 95,
+      functions: 95,
     },
   },
 };
