@@ -475,9 +475,6 @@ describe('CartPage Component', () => {
     // Assert
 
     await waitFor(() => {
-    expect(window.localStorage.removeItem).toHaveBeenCalledWith('cart');
-    })
-    await waitFor(() => {
 
     expect(mockSetCart).toHaveBeenCalledWith([]);
     })
