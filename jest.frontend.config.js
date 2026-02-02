@@ -22,6 +22,7 @@ export default {
   // only run these tests
   testMatch: [
     "<rootDir>/client/src/__tests__/pages/*.test.js",
+    "<rootDir>/client/src/pages/**/*.test.js"
   ],
 
   // jest code coverage
