@@ -34,6 +34,7 @@ module.exports = {
         "client/src/pages/CategoryProduct.js",
         "client/src/pages/Policy.js",
         "client/src/pages/Contact.js",
+        "client/src/pages/ProductDetails.js",
     ],
     coverageThreshold: {
         global: {
