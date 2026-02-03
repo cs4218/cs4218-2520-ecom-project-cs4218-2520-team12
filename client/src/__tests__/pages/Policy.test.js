@@ -52,7 +52,7 @@ describe("Policy Component", () => {
         jest.clearAllMocks();
     });
 
-    it("renders main content inside layout", () => {
+    it("Policy_defaultRender_rendersLayoutAndContent", () => {
         // Arrange
         renderWithRouter();
 
@@ -66,7 +66,7 @@ describe("Policy Component", () => {
         ).toBeGreaterThan(0);
     });
 
-    it("renders the policy image with expected attributes", () => {
+    it("Policy_defaultRender_rendersPolicyImage", () => {
         // Arrange
         renderWithRouter();
 
@@ -78,7 +78,7 @@ describe("Policy Component", () => {
         expect(image).toHaveAttribute("src", "/images/contactus.jpeg");
     });
 
-    it("renders exactly 7 policy paragraphs", () => {
+    it("Policy_defaultRender_rendersSevenPolicyParagraphs", () => {
         // Arrange
         renderWithRouter();
 
@@ -89,7 +89,7 @@ describe("Policy Component", () => {
         expect(paragraphs).toHaveLength(7);
     });
 
-    it("passes the expected title to Layout", () => {
+    it("Layout_defaultRender_receivesPrivacyPolicyTitle", () => {
         // Arrange
         renderWithRouter();
 
@@ -100,7 +100,7 @@ describe("Policy Component", () => {
         expect(titleNode).toHaveTextContent("Privacy Policy");
     });
 
-    it("renders without a router wrapper", () => {
+    it("Policy_withoutRouter_rendersLayoutAndTitle", () => {
         // Arrange
         render(<Policy />);
 

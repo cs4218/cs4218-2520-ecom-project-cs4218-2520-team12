@@ -61,7 +61,7 @@ describe("ProductDetails Component", () => {
         jest.clearAllMocks();
     });
 
-    it("renders product details and fetches related products", async () => {
+    it("getProduct_success_rendersDetailsAndCallsRelatedProducts", async () => {
         // Arrange
         const product = {
             _id: "p1",
@@ -107,7 +107,7 @@ describe("ProductDetails Component", () => {
         ).toBeInTheDocument();
     });
 
-    it("renders similar product cards and navigates on More Details", async () => {
+    it("relatedProducts_nonEmpty_rendersCardsAndNavigatesToDetails", async () => {
         // Arrange
         const product = {
             _id: "p1",
@@ -168,7 +168,7 @@ describe("ProductDetails Component", () => {
         expect(mockNavigate).toHaveBeenCalledWith("/product/case");
     });
 
-    it("missing slug does not call API", () => {
+    it("getProduct_missingSlug_doesNotCallApi", () => {
         // Arrange
         // no axios stubbing needed; should not be called
 
@@ -182,7 +182,7 @@ describe("ProductDetails Component", () => {
         ).toBeInTheDocument();
     });
 
-    it("getProduct error logs and renders fallback", async () => {
+    it("getProduct_apiRejects_logsErrorAndRendersEmptyState", async () => {
         // Arrange
         const consoleSpy = jest
             .spyOn(console, "log")
@@ -203,7 +203,7 @@ describe("ProductDetails Component", () => {
         consoleSpy.mockRestore();
     });
 
-    it("getSimilarProduct error logs and keeps empty state", async () => {
+    it("getSimilarProduct_apiRejects_logsErrorAndKeepsEmptyState", async () => {
         // Arrange
         const consoleSpy = jest
             .spyOn(console, "log")
