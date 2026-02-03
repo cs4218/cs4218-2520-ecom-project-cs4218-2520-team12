@@ -57,7 +57,7 @@ describe("Search Component", () => {
         jest.clearAllMocks();
     });
 
-    it("renders empty state when results is empty", () => {
+    it("Search_resultsEmpty_rendersNoProductsFound", () => {
         // Arrange
         useSearch.mockReturnValue([{ keyword: "abc", results: [] }, jest.fn()]);
         renderWithRouter();
@@ -73,7 +73,7 @@ describe("Search Component", () => {
         expect(screen.getByText("No Products Found")).toBeInTheDocument();
     });
 
-    it("renders count when results exist (boundary: 1)", () => {
+    it("Search_resultsOneItem_rendersFoundCount", () => {
         // Arrange
         useSearch.mockReturnValue([
             {
@@ -98,7 +98,7 @@ describe("Search Component", () => {
         expect(screen.getByText("Found 1")).toBeInTheDocument();
     });
 
-    it("renders a card per product with correct anchors", () => {
+    it("Search_resultsMultiple_rendersProductCardsWithAnchors", () => {
         // Arrange
         useSearch.mockReturnValue([
             {
@@ -154,7 +154,7 @@ describe("Search Component", () => {
         );
     });
 
-    it("handles missing context value without crashing", () => {
+    it("Search_contextMissing_doesNotCrashAndRendersFallbackCount", () => {
         // Arrange
         useSearch.mockReturnValue([undefined, jest.fn()]);
         renderWithRouter();
@@ -169,7 +169,7 @@ describe("Search Component", () => {
         expect(screen.getByText("Found undefined")).toBeInTheDocument();
     });
 
-    it("passes the expected title to Layout", () => {
+    it("Layout_defaultRender_receivesSearchResultsTitle", () => {
         // Arrange
         useSearch.mockReturnValue([{ keyword: "", results: [] }, jest.fn()]);
         renderWithRouter();

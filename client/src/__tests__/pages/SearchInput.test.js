@@ -49,7 +49,7 @@ describe("SearchInput Component", () => {
         jest.clearAllMocks();
     });
 
-    it("renders search input bound to keyword", () => {
+    it("SearchInput_defaultRender_rendersControlledInput", () => {
         // Arrange
         useSearch.mockReturnValue([
             { keyword: "laptop", results: [] },
@@ -68,7 +68,7 @@ describe("SearchInput Component", () => {
         ).toBeInTheDocument();
     });
 
-    it("typing updates keyword via setValues", () => {
+    it("SearchInput_onChange_updatesKeywordViaSetValues", () => {
         // Arrange
         const setValues = jest.fn();
         useSearch.mockReturnValue([{ keyword: "", results: [] }, setValues]);
@@ -86,7 +86,7 @@ describe("SearchInput Component", () => {
         });
     });
 
-    it("submit success calls API, sets results, navigates", async () => {
+    it("handleSubmit_apiSuccess_setsResultsAndNavigates", async () => {
         // Arrange
         const setValues = jest.fn();
         const values = { keyword: "iphone", results: [] };
@@ -112,7 +112,7 @@ describe("SearchInput Component", () => {
         expect(mockNavigate).toHaveBeenCalledWith("/search");
     });
 
-    it("submit failure logs error and does not navigate", async () => {
+    it("handleSubmit_apiRejects_logsErrorAndDoesNotNavigate", async () => {
         // Arrange
         const consoleSpy = jest
             .spyOn(console, "log")
