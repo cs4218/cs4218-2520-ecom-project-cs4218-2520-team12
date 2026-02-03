@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -68,6 +69,26 @@ Object.defineProperty(window, 'localStorage', {
   },
   writable: true,
 });
+
+/**
+ * Test-to-partition mapping (for MS1 traceability)
+ * - "renders_cartPage_displaysCartItems" -> Equivalence class: cart with multiple items (standard render)
+ * - "calculateTotal_withItems_displaysCorrectTotal" -> Boundary analysis: price calculation accuracy
+ * - "removeItem_clickRemove_removesFromCart" -> Equivalence class: cart modification operations
+ * - "emptyCart_noItems_displaysEmptyMessage" -> Edge case: empty cart state
+ * - "payment_notLoggedIn_showsLoginPrompt" -> Authentication partition: guest user flow
+ * - "payment_loggedIn_showsBraintreeDropIn" -> Authentication partition: authenticated user payment
+ * - "userAddress_displayed_showsCurrentAddress" -> Equivalence class: user data display
+ * - "updateAddress_clickButton_navigatesToProfile" -> Navigation partition: address update flow
+ * - "productDescription_displayed_truncatesTo30Chars" -> Boundary analysis: text truncation at 30 chars
+ * - "getToken_apiError_handlesGracefully" -> Error handling partition: Braintree token failure
+ * - "removeCartItem_error_handlesGracefully" -> Error handling partition: cart operation failure
+ * - "loginButton_click_navigatesToLoginWithState" -> Navigation partition: login redirect with state
+ * - "updateAddressButton_noAddress_navigatesToProfile" -> Edge case: missing address data
+ * - "totalPrice_withInvalidPrice_handlesError" -> Error handling partition: price formatting error
+ * - "handlePayment_success_clearsCartAndNavigates" -> Equivalence class: successful payment flow
+ * - "handlePayment_error_setsLoadingFalse" -> Error handling partition: payment processing failure
+ */
 
 describe('CartPage Component', () => {
   let mockCart;

@@ -1,3 +1,4 @@
+
 import {
   createProductController,
   getProductController,
@@ -52,6 +53,55 @@ jest.mock("../../models/productModel.js");
 jest.mock("../../models/categoryModel.js");
 jest.mock("../../models/orderModel.js");
 jest.mock("fs");
+
+/**
+ * Test-to-partition mapping (for MS1 traceability)
+ * - "createProduct_success_returns201" -> Equivalence class: successful product creation with photo
+ * - "createProduct_missingName_returns500" -> Input validation partition: name field required
+ * - "createProduct_missingDescription_returns500" -> Input validation partition: description field required
+ * - "createProduct_missingPrice_returns500" -> Input validation partition: price field required
+ * - "createProduct_missingCategory_returns500" -> Input validation partition: category field required
+ * - "createProduct_missingQuantity_returns500" -> Input validation partition: quantity field required
+ * - "createProduct_photoTooLarge_returns500" -> Boundary analysis: photo size validation (>1MB)
+ * - "createProduct_errorDuringSave_returns500" -> Error handling partition: database save failure
+ * - "getProducts_success_returnsProducts" -> Equivalence class: fetch all products with pagination
+ * - "getProducts_error_returns500" -> Error handling partition: product fetch failure
+ * - "getSingleProduct_success_returnsProduct" -> Equivalence class: fetch single product by slug
+ * - "getSingleProduct_error_returns500" -> Error handling partition: single product fetch failure
+ * - "getPhoto_success_returnsPhotoData" -> Equivalence class: retrieve product photo binary data
+ * - "getPhoto_error_returns500" -> Error handling partition: photo retrieval failure
+ * - "deleteProduct_success_returns200" -> Equivalence class: successful product deletion
+ * - "deleteProduct_error_returns500" -> Error handling partition: delete operation failure
+ * - "updateProduct_success_returns201" -> Equivalence class: successful product update with photo
+ * - "updateProduct_successWithoutPhoto_returns201" -> Equivalence class: update without changing photo
+ * - "updateProduct_missingName_returns500" -> Input validation partition: name required for update
+ * - "updateProduct_missingDescription_returns500" -> Input validation partition: description required for update
+ * - "updateProduct_missingPrice_returns500" -> Input validation partition: price required for update
+ * - "updateProduct_missingCategory_returns500" -> Input validation partition: category required for update
+ * - "updateProduct_missingQuantity_returns500" -> Input validation partition: quantity required for update
+ * - "updateProduct_photoTooLarge_returns500" -> Boundary analysis: photo size validation on update
+ * - "updateProduct_error_returns500" -> Error handling partition: update operation failure
+ * - "filterProducts_withCategoryAndPrice_returnsFilteredProducts" -> Filter partition: combined filters
+ * - "filterProducts_withCategoryOnly_returnsFilteredProducts" -> Filter partition: category-only filter
+ * - "filterProducts_error_returns400" -> Error handling partition: filter operation failure
+ * - "getProductCount_success_returnsCount" -> Equivalence class: total product count retrieval
+ * - "getProductCount_error_returns400" -> Error handling partition: count operation failure
+ * - "getProductList_withPage_returnsPagedProducts" -> Pagination partition: specific page request
+ * - "getProductList_withoutPage_returnsFirstPage" -> Pagination partition: default first page
+ * - "getProductList_error_returns400" -> Error handling partition: pagination failure
+ * - "searchProduct_success_returnsMatchingProducts" -> Search partition: keyword-based search
+ * - "searchProduct_error_returns400" -> Error handling partition: search operation failure
+ * - "getRelatedProducts_success_returnsRelatedProducts" -> Equivalence class: related products by category
+ * - "getRelatedProducts_error_returns400" -> Error handling partition: related products fetch failure
+ * - "getProductsByCategory_success_returnsProducts" -> Equivalence class: products filtered by category slug
+ * - "getProductsByCategory_error_returns400" -> Error handling partition: category filter failure
+ * - "getToken_success_returnsToken" -> Payment integration partition: Braintree token generation
+ * - "getToken_error_returns500" -> Error handling partition: Braintree token failure
+ * - "getToken_catchBlockError_logsError" -> Error handling partition: unexpected Braintree error
+ * - "processPayment_success_createsOrder" -> Payment integration partition: successful transaction
+ * - "processPayment_error_returns500" -> Error handling partition: payment processing failure
+ * - "processPayment_catchBlockError_logsError" -> Error handling partition: unexpected payment error
+ */
 
 describe("Product Controller", () => {
   let req, res;

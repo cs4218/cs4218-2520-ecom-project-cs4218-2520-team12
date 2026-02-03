@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -39,6 +40,26 @@ Object.defineProperty(window, 'localStorage', {
   },
   writable: true,
 });
+
+/**
+ * Test-to-partition mapping (for MS1 traceability)
+ * - "renders_homePage_displaysProductsAndFilters" -> Equivalence class: standard page render with filters
+ * - "loadProducts_onMount_fetchesAndDisplaysProducts" -> Equivalence class: product list initialization
+ * - "filterByCategory_selectCategory_callsFilterAPI" -> Filter partition: category-based filtering
+ * - "filterByPrice_selectPriceRange_callsFilterAPI" -> Filter partition: price range filtering
+ * - "addToCart_clickButton_addsProductToCart" -> Equivalence class: cart addition operation
+ * - "loadMore_clickButton_loadsMoreProducts" -> Pagination partition: incremental loading
+ * - "productDescription_longText_truncatesTo60Chars" -> Boundary analysis: text truncation at 60 chars
+ * - "productPrice_displayed_formattedAsCurrency" -> Data formatting partition: price presentation
+ * - "apiError_getAllCategory_handlesGracefully" -> Error handling partition: category fetch failure
+ * - "apiError_getTotal_handlesGracefully" -> Error handling partition: product count failure
+ * - "apiError_getAllProducts_handlesGracefully" -> Error handling partition: product list failure
+ * - "apiError_loadMore_handlesGracefully" -> Error handling partition: pagination failure
+ * - "apiError_filterProduct_handlesGracefully" -> Error handling partition: filter operation failure
+ * - "uncheckCategory_removesFromFilter" -> Filter partition: filter removal behavior
+ * - "resetFiltersButton_click_reloadsPage" -> Filter partition: reset functionality
+ * - "moreDetailsButton_click_navigatesToProductPage" -> Navigation partition: product detail routing
+ */
 
 describe('HomePage Component', () => {
   let mockCart;

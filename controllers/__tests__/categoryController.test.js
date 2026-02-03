@@ -1,3 +1,4 @@
+
 import {
   createCategoryController,
   updateCategoryController,
@@ -12,7 +13,7 @@ jest.mock("../../models/categoryModel.js");
 
 describe("Category Controller", () => {
   let req, res;
-
+  
   beforeEach(() => {
     req = {
       body: {},
@@ -26,7 +27,26 @@ describe("Category Controller", () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {})
   });
-
+  
+  /**
+   * Test-to-partition mapping (for MS1 traceability)
+   * - "createCategory_success_returns201" -> Equivalence class: successful category creation
+   * - "createCategory_missingName_returns401" -> Input validation partition: required field missing
+   * - "createCategory_alreadyExists_returns200" -> Duplicate detection partition: existing category
+   * - "createCategory_error_returns500" -> Error handling partition: database operation failure
+   * - "updateCategory_success_returns200" -> Equivalence class: successful category update
+   * - "updateCategory_error_returns500" -> Error handling partition: update operation failure
+   * - "getAllCategories_success_returns200" -> Equivalence class: fetch all categories
+   * - "getAllCategories_error_returns500" -> Error handling partition: fetch operation failure
+   * - "getAllCategories_emptyList_returns200" -> Edge case: no categories in database
+   * - "getSingleCategory_success_returns200" -> Equivalence class: fetch single category by slug
+   * - "getSingleCategory_notFound_returns200WithNull" -> Edge case: category not found
+   * - "getSingleCategory_error_returns500" -> Error handling partition: fetch operation failure
+   * - "deleteCategory_success_returns200" -> Equivalence class: successful category deletion
+   * - "deleteCategory_notFound_stillReturns200" -> Edge case: delete non-existent category
+   * - "deleteCategory_error_returns500" -> Error handling partition: delete operation failure
+   */
+  
   // ============ createCategoryController Tests ============
   describe("createCategoryController", () => {
     // Arrange-Act-Assert

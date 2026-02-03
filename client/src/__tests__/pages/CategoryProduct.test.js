@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -35,6 +36,19 @@ window.matchMedia = window.matchMedia || function() {
   };
 };
 
+/**
+ * Test-to-partition mapping (for MS1 traceability)
+ * - "renders_categoryProductPage_displaysLoading" -> Equivalence class: loading state during async fetch
+ * - "fetchProducts_onMount_callsAPIWithSlug" -> API integration partition: correct endpoint with params
+ * - "displayProducts_validData_showsProductCards" -> Equivalence class: multiple products display
+ * - "displayCategory_validData_showsCategoryName" -> Equivalence class: category metadata display
+ * - "productPrice_displayed_formattedAsCurrency" -> Data formatting partition: price presentation
+ * - "productDescription_longText_truncatesTo60Chars" -> Boundary analysis: text truncation at 60 chars
+ * - "apiError_failedRequest_handlesGracefully" -> Error handling partition: network failure recovery
+ * - "moreDetailsButton_hasCorrectClass" -> Structural completeness: CSS class validation
+ * - "noSlug_skipsAPICall" -> Edge case: missing route parameter
+ * - "moreDetailsButton_click_navigatesToProductDetails" -> Navigation partition: product detail routing
+ */
 
 describe('CategoryProduct Component', () => {
   beforeEach(() => {
