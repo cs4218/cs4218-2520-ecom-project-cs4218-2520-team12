@@ -22,6 +22,13 @@ jest.mock('../../context/search', () => ({
     useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()]) // Mock useSearch hook to return null state and a mock function
   }));  
 
+jest.mock('../../hooks/useCategory', () => ({
+    __esModule: true,
+    default: jest.fn(() => {
+      return [      { id: 1, name: 'Category 1', key:1 },      { id: 2, name: 'Category 2', key:2 }    ];
+    }),
+  }));
+
   Object.defineProperty(window, 'localStorage', {
     value: {
       setItem: jest.fn(),
@@ -93,6 +100,11 @@ describe('Login Component', () => {
                 token: 'mockToken'
             }
         });
+        axios.get.mockResolvedValueOnce({
+        data: {
+            category: [/* ... */]
+        }
+        });
 
         const { getByPlaceholderText, getByText } = render(
             <MemoryRouter initialEntries={['/login']}>
@@ -105,6 +117,7 @@ describe('Login Component', () => {
         fireEvent.change(getByPlaceholderText('Enter Your Email'), { target: { value: 'test@example.com' } });
         fireEvent.change(getByPlaceholderText('Enter Your Password'), { target: { value: 'password123' } });
         fireEvent.click(getByText('LOGIN'));
+
 
         await waitFor(() => expect(axios.post).toHaveBeenCalled());
         expect(toast.success).toHaveBeenCalledWith(undefined, {
@@ -119,6 +132,12 @@ describe('Login Component', () => {
 
     it('should display error message on failed login', async () => {
         axios.post.mockRejectedValueOnce({ message: 'Invalid credentials' });
+        axios.get.mockResolvedValueOnce({
+            data: {
+                category: [/* ... */]
+            }
+        });
+
 
         const { getByPlaceholderText, getByText } = render(
             <MemoryRouter initialEntries={['/login']}>
