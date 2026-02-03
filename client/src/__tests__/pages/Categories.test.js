@@ -1,5 +1,7 @@
 /* eslint-disable testing-library/no-container */
 /* eslint-disable testing-library/no-node-access */
+
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -27,20 +29,29 @@ window.matchMedia = window.matchMedia || function() {
   };
 };
 
+/**
+ * Test-to-partition mapping (for MS1 traceability)
+ * - "renders_categoriesPage_displaysTitle" -> Equivalence class: standard page render (title anchor)
+ * - "loadCategories_onMount_displaysAllCategories" -> Equivalence class: multiple categories display
+ * - "categoryLink_displayed_hasCorrectHref" -> Structural completeness: link routing integrity
+ * - "emptyCategories_noData_displaysEmptyGrid" -> Edge case: no categories available
+ * - "multipleCategories_rendered_eachHasUniqueKey" -> Structural completeness: React key uniqueness
+ */
+
 describe('Categories Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {})
   });
-
+  
   afterEach(() => {
   });
-
+  
   it('renders_categoriesPage_displaysTitle', () => {
     // Arrange
     useCategory.mockReturnValue([]);
-
+    
     // Act
     render(
       <MemoryRouter>
