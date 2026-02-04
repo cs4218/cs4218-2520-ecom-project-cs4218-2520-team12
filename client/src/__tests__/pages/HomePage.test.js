@@ -71,7 +71,13 @@ describe('HomePage Component', () => {
     mockSetCart = jest.fn();
     useCart.mockReturnValue([mockCart, mockSetCart]);
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    // Suppress expected warnings (React key warning from Header component)
+    jest.spyOn(console, 'error').mockImplementation((message) => {
+      if (message?.includes?.('unique "key" prop') || 
+          typeof message === 'string' && message.includes('unique "key" prop')) {
+        return;
+      }
+    });
   });
 
   test('renders_homePage_displaysProductsAndFilters', async () => {
