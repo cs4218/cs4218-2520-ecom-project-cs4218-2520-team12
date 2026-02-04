@@ -58,7 +58,7 @@ describe("Contact Component", () => {
         jest.clearAllMocks();
     });
 
-    it("renders main content inside layout", () => {
+    it("Contact_defaultRender_rendersLayoutTitleAndHeading", () => {
         // Arrange
         renderWithRouter();
 
@@ -76,7 +76,7 @@ describe("Contact Component", () => {
         expect(screen.getByText(/available\s+24x7/i)).toBeInTheDocument();
     });
 
-    it("renders the contact image with expected attributes", () => {
+    it("Contact_defaultRender_rendersContactImage", () => {
         // Arrange
         renderWithRouter();
 
@@ -88,7 +88,7 @@ describe("Contact Component", () => {
         expect(image).toHaveAttribute("src", "/images/contactus.jpeg");
     });
 
-    it("renders contact information lines", () => {
+    it("Contact_defaultRender_rendersContactInformationLines", () => {
         // Arrange
         renderWithRouter();
 
@@ -103,7 +103,7 @@ describe("Contact Component", () => {
         expect(support).toBeInTheDocument();
     });
 
-    it("renders icons (mocked)", () => {
+    it("Contact_defaultRender_rendersIcons", () => {
         // Arrange
         renderWithRouter();
 
@@ -118,7 +118,7 @@ describe("Contact Component", () => {
         expect(supportIcon).toBeInTheDocument();
     });
 
-    it("renders without a router wrapper", () => {
+    it("Contact_withoutRouter_rendersLayoutAndTitle", () => {
         // Arrange
         render(<Contact />);
 
