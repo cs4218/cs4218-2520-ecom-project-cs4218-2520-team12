@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import Categories from '../../pages/Categories';
 import useCategory from '../../hooks/useCategory';
+import axios from 'axios';
 
 // Mock dependencies
 jest.mock('../../hooks/useCategory');
@@ -20,6 +21,7 @@ jest.mock('../../context/cart', () => ({
 jest.mock('../../context/search', () => ({
   useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()])
 }));
+jest.mock('axios');
 
 window.matchMedia = window.matchMedia || function() {
   return {
@@ -42,7 +44,11 @@ describe('Categories Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    axios.get.mockImplementation((url) => {
+      if (url === '/api/v1/product/braintree/token') {
+        return Promise.resolve({ data: { success: true } });
+      }
+    });
   });
   
   afterEach(() => {
