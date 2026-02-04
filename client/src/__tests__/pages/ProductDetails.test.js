@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+    render,
+    screen,
+    fireEvent,
+    waitFor,
+    act,
+} from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import axios from "axios";
@@ -16,6 +22,16 @@ import ProductDetails from "../../pages/ProductDetails";
  */
 
 jest.mock("axios");
+
+const createDeferred = () => {
+    let resolve;
+    let reject;
+    const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+    return { promise, resolve, reject };
+};
 
 jest.mock("../../components/Layout", () => {
     const LayoutMock = ({ children }) => (
@@ -71,9 +87,11 @@ describe("ProductDetails Component", () => {
             category: { _id: "c1", name: "Phones" },
         };
 
+        const relatedRequest = createDeferred();
+
         axios.get
             .mockResolvedValueOnce({ data: { product } })
-            .mockResolvedValueOnce({ data: { products: [] } });
+            .mockImplementationOnce(() => relatedRequest.promise);
 
         // Act
         renderWithRouter("/product/iphone");
@@ -102,8 +120,13 @@ describe("ProductDetails Component", () => {
             );
         });
 
+        await act(async () => {
+            relatedRequest.resolve({ data: { products: [] } });
+            await relatedRequest.promise;
+        });
+
         expect(
-            screen.getByText(/No Similar Products found/i),
+            await screen.findByText(/No Similar Products found/i),
         ).toBeInTheDocument();
     });
 
@@ -136,9 +159,11 @@ describe("ProductDetails Component", () => {
             },
         ];
 
+        const relatedRequest = createDeferred();
+
         axios.get
             .mockResolvedValueOnce({ data: { product } })
-            .mockResolvedValueOnce({ data: { products: relatedProducts } });
+            .mockImplementationOnce(() => relatedRequest.promise);
 
         // Act
         renderWithRouter("/product/iphone");
@@ -147,6 +172,17 @@ describe("ProductDetails Component", () => {
         expect(
             await screen.findByText("Similar Products ➡️"),
         ).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                "/api/v1/product/related-product/p1/c1",
+            );
+        });
+
+        await act(async () => {
+            relatedRequest.resolve({ data: { products: relatedProducts } });
+            await relatedRequest.promise;
+        });
 
         expect(await screen.findByText("Case")).toBeInTheDocument();
         expect(await screen.findByText("Charger")).toBeInTheDocument();
@@ -168,7 +204,7 @@ describe("ProductDetails Component", () => {
         expect(mockNavigate).toHaveBeenCalledWith("/product/case");
     });
 
-    it("getProduct_missingSlug_doesNotCallApi", () => {
+    it("getProduct_missingSlug_doesNotCallApi", async () => {
         // Arrange
         // no axios stubbing needed; should not be called
 
@@ -178,7 +214,7 @@ describe("ProductDetails Component", () => {
         // Assert
         expect(axios.get).not.toHaveBeenCalled();
         expect(
-            screen.getByText(/No Similar Products found/i),
+            await screen.findByText(/No Similar Products found/i),
         ).toBeInTheDocument();
     });
 
@@ -197,7 +233,7 @@ describe("ProductDetails Component", () => {
             expect(consoleSpy).toHaveBeenCalled();
         });
         expect(
-            screen.getByText(/No Similar Products found/i),
+            await screen.findByText(/No Similar Products found/i),
         ).toBeInTheDocument();
 
         consoleSpy.mockRestore();
@@ -240,7 +276,7 @@ describe("ProductDetails Component", () => {
         });
 
         expect(
-            screen.getByText(/No Similar Products found/i),
+            await screen.findByText(/No Similar Products found/i),
         ).toBeInTheDocument();
 
         consoleSpy.mockRestore();
