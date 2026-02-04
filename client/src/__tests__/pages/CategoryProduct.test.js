@@ -64,6 +64,7 @@ const renderWithRouter = (
 describe("CategoryProduct Component", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.spyOn(console, "log").mockImplementation(() => {});
     });
 
     test("renders_categoryProductPage_displaysLoading", () => {

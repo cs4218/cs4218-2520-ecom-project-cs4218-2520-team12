@@ -1,73 +1,82 @@
-
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import '@testing-library/jest-dom/extend-expect';
-import axios from 'axios';
-import CartPage from '../../pages/CartPage';
-import { useCart } from '../../context/cart';
-import { useAuth } from '../../context/auth';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import "@testing-library/jest-dom/extend-expect";
+import axios from "axios";
+import toast from "react-hot-toast";
+import CartPage from "../../pages/CartPage";
+import { useCart } from "../../context/cart";
+import { useAuth } from "../../context/auth";
 
 // Mock dependencies
-jest.mock('axios');
-jest.mock('react-hot-toast');
-jest.mock('braintree-web-drop-in-react', () => {
-  const React = require('react');
-  return function DropIn({ onInstance }) {
-    const instanceRef = React.useRef(null);
-    
-    React.useEffect(() => {
-      if (onInstance && !instanceRef.current) {
-        const mockInstance = {
-          requestPaymentMethod: jest.fn().mockResolvedValue({ nonce: 'fake-nonce' })
-        };
-        instanceRef.current = mockInstance;
-        onInstance(mockInstance);
-      }
-    }, []); // Empty dependency array to run only once
-    
-    return React.createElement('div', { 'data-testid': 'braintree-dropin' }, 'Braintree DropIn');
-  };
+jest.mock("axios");
+jest.mock("react-hot-toast");
+jest.mock("braintree-web-drop-in-react", () => {
+    const React = require("react");
+    return function DropIn({ onInstance }) {
+        const instanceRef = React.useRef(null);
+
+        React.useEffect(() => {
+            if (onInstance && !instanceRef.current) {
+                const mockInstance = {
+                    requestPaymentMethod: jest
+                        .fn()
+                        .mockResolvedValue({ nonce: "fake-nonce" }),
+                };
+                instanceRef.current = mockInstance;
+                onInstance(mockInstance);
+            }
+        }, []); // Empty dependency array to run only once
+
+        return React.createElement(
+            "div",
+            { "data-testid": "braintree-dropin" },
+            "Braintree DropIn",
+        );
+    };
 });
+// ...existing code...
 
-jest.mock('../../context/cart', () => ({
-  useCart: jest.fn()
+jest.mock("../../context/cart", () => ({
+    useCart: jest.fn(),
 }));
 
-jest.mock('../../context/auth', () => ({
-  useAuth: jest.fn()
+jest.mock("../../context/auth", () => ({
+    useAuth: jest.fn(),
 }));
 
-jest.mock('../../context/search', () => ({
-  useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()])
+jest.mock("../../context/search", () => ({
+    useSearch: jest.fn(() => [{ keyword: "" }, jest.fn()]),
 }));
 
-jest.mock('../../hooks/useCategory', () => ({
-  __esModule: true,
-  default: jest.fn(() => [])
+jest.mock("../../hooks/useCategory", () => ({
+    __esModule: true,
+    default: jest.fn(() => []),
 }));
 
 const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate
+jest.mock("react-router-dom", () => ({
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate,
 }));
 
-window.matchMedia = window.matchMedia || function() {
-  return {
-    matches: false,
-    addListener: function() {},
-    removeListener: function() {}
-  };
-};
+window.matchMedia =
+    window.matchMedia ||
+    function () {
+        return {
+            matches: false,
+            addListener: function () {},
+            removeListener: function () {},
+        };
+    };
 
-Object.defineProperty(window, 'localStorage', {
-  value: {
-    setItem: jest.fn(),
-    getItem: jest.fn(),
-    removeItem: jest.fn(),
-  },
-  writable: true,
+Object.defineProperty(window, "localStorage", {
+    value: {
+        setItem: jest.fn(),
+        getItem: jest.fn(),
+        removeItem: jest.fn(),
+    },
+    writable: true,
 });
 
 /**
@@ -107,10 +116,11 @@ describe('CartPage Component', () => {
     useAuth.mockReturnValue([mockAuth, mockSetAuth]);
 
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    // specifically we are getting the error because of useEffect in CartPage so we can ignore it
     jest.spyOn(console, 'error').mockImplementation(() => {})
   });
 
-  test('renders_cartPage_displaysCartItems', () => {
+  test('renders_cartPage_displaysCartItems', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' },
@@ -126,12 +136,12 @@ describe('CartPage Component', () => {
     );
 
     // Assert
-    expect(screen.getByText('Laptop')).toBeInTheDocument();
-    expect(screen.getByText('Mouse')).toBeInTheDocument();
-    expect(screen.getByText(/You Have 2 items in your cart/)).toBeInTheDocument();
+    await expect(screen.getByText('Laptop')).toBeInTheDocument();
+    await expect(screen.getByText('Mouse')).toBeInTheDocument();
+    await expect(screen.getByText(/You Have 2 items in your cart/)).toBeInTheDocument();
   });
 
-  test('calculateTotal_withItems_displaysCorrectTotal', () => {
+  test('calculateTotal_withItems_displaysCorrectTotal', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' },
@@ -147,37 +157,50 @@ describe('CartPage Component', () => {
     );
 
     // Assert
-    expect(screen.getByText('Total : $1,024.00')).toBeInTheDocument();
+    await expect(screen.getByText('Total : $1,024.00')).toBeInTheDocument();
   });
 
-  test('removeItem_clickRemove_removesFromCart', () => {
-    // Arrange
-    const mockCartItems = [
-      { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' },
-      { _id: '2', name: 'Mouse', price: 25, description: 'Wireless mouse' },
-      { _id: '3', name: 'Keyboard', price: 75, description: 'Mechanical keyboard' }
-    ];
-    useCart.mockReturnValue([mockCartItems, mockSetCart]);
+  test('removeItem_clickRemove_removesFromCart', async () => {
+      // Arrange
+      const mockCartItems = [
+        { _id: "1", name: "Laptop", price: 999, description: "High performance laptop" },
+        { _id: "2", name: "Mouse", price: 25, description: "Wireless mouse" },
+        { _id: "3", name: "Keyboard", price: 75, description: "Mechanical keyboard" },
+      ];
+      useCart.mockReturnValue([mockCartItems, mockSetCart]);
+      useAuth.mockReturnValue([{ user: null, token: 'test-token' }, mockSetAuth]);
 
-    // Act
-    render(
-      <MemoryRouter>
-        <CartPage />
-      </MemoryRouter>
-    );
 
-    const removeButtons = screen.getAllByText('Remove');
-    fireEvent.click(removeButtons[1]); // Remove Mouse
+      // Act
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
 
-    // Assert
-    expect(mockSetCart).toHaveBeenCalledWith([
-      { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' },
-      { _id: '3', name: 'Keyboard', price: 75, description: 'Mechanical keyboard' }
-    ]);
-    expect(window.localStorage.setItem).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(axios.get).toHaveBeenCalledWith("/api/v1/product/braintree/token");
+      });
+
+      // If the buttons appear after an effect/render cycle, use findAllBy...
+      const removeButtons = await screen.findAllByText("Remove");
+
+      fireEvent.click(removeButtons[1]); // Remove Mouse
+
+      // Assert
+      await waitFor(() => {
+        expect(mockSetCart).toHaveBeenCalledWith([
+          { _id: "1", name: "Laptop", price: 999, description: "High performance laptop" },
+          { _id: "3", name: "Keyboard", price: 75, description: "Mechanical keyboard" },
+        ]);
+      });
+
+      await waitFor(() => {
+        expect(window.localStorage.setItem).toHaveBeenCalled();
+      });
   });
 
-  test('emptyCart_noItems_displaysEmptyMessage', () => {
+  test('emptyCart_noItems_displaysEmptyMessage', async () => {
     // Arrange
     useCart.mockReturnValue([[], mockSetCart]);
 
@@ -189,10 +212,10 @@ describe('CartPage Component', () => {
     );
 
     // Assert
-    expect(screen.getByText('Your Cart Is Empty')).toBeInTheDocument();
+   await expect(screen.getByText('Your Cart Is Empty')).toBeInTheDocument();
   });
 
-  test('payment_notLoggedIn_showsLoginPrompt', () => {
+  test('payment_notLoggedIn_showsLoginPrompt', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' }
@@ -208,9 +231,9 @@ describe('CartPage Component', () => {
     );
 
     // Assert
-    expect(screen.getByText('Hello Guest')).toBeInTheDocument();
-    expect(screen.getByText(/please login to checkout/)).toBeInTheDocument();
-    expect(screen.getByText('Plase Login to checkout')).toBeInTheDocument();
+    await expect(screen.getByText('Hello Guest')).toBeInTheDocument();
+    await expect(screen.getByText(/please login to checkout/)).toBeInTheDocument();
+    await expect(screen.getByText('Plase Login to checkout')).toBeInTheDocument();
   });
 
   test('payment_loggedIn_showsBraintreeDropIn', async () => {
@@ -239,12 +262,12 @@ describe('CartPage Component', () => {
     );
 
     // Assert
-    expect(await screen.findByText(`Hello ${mockUser.name}`)).toBeInTheDocument();
-    expect(await screen.findByTestId('braintree-dropin')).toBeInTheDocument();
+    await expect(await screen.findByText(`Hello ${mockUser.name}`)).toBeInTheDocument();
+    await expect(await screen.findByTestId('braintree-dropin')).toBeInTheDocument();
 
   });
 
-  test('userAddress_displayed_showsCurrentAddress', () => {
+  test('userAddress_displayed_showsCurrentAddress', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' }
@@ -257,6 +280,10 @@ describe('CartPage Component', () => {
     };
     useCart.mockReturnValue([mockCartItems, mockSetCart]);
     useAuth.mockReturnValue([{ user: mockUser, token: 'fake-token' }, mockSetAuth]);
+    
+    axios.get.mockResolvedValueOnce({ 
+      data: { clientToken: 'fake-braintree-token' } 
+    });
 
     // Act
     render(
@@ -265,12 +292,17 @@ describe('CartPage Component', () => {
       </MemoryRouter>
     );
 
+    // Wait for token fetch to complete
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalled();
+    });
+
     // Assert
-    expect(screen.getByText('Current Address')).toBeInTheDocument();
-    expect(screen.getByText('123 Main St, New York, NY 10001')).toBeInTheDocument();
+    await expect(screen.getByText('Current Address')).toBeInTheDocument();
+    await expect(screen.getByText('123 Main St, New York, NY 10001')).toBeInTheDocument();
   });
 
-  test('updateAddress_clickButton_navigatesToProfile', () => {
+  test('updateAddress_clickButton_navigatesToProfile', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' }
@@ -283,6 +315,10 @@ describe('CartPage Component', () => {
     };
     useCart.mockReturnValue([mockCartItems, mockSetCart]);
     useAuth.mockReturnValue([{ user: mockUser, token: 'fake-token' }, mockSetAuth]);
+    
+    axios.get.mockResolvedValueOnce({ 
+      data: { clientToken: 'fake-braintree-token' } 
+    });
 
     // Act
     render(
@@ -291,14 +327,19 @@ describe('CartPage Component', () => {
       </MemoryRouter>
     );
 
+    // Wait for token fetch to complete
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalled();
+    });
+
     const updateButton = screen.getByText('Update Address');
     fireEvent.click(updateButton);
 
     // Assert
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/profile');
+    await expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/profile');
   });
 
-  test('productDescription_displayed_truncatesTo30Chars', () => {
+  test('productDescription_displayed_truncatesTo30Chars', async () => {
     // Arrange
     const longDescription = 'This is a very long product description that should be truncated';
     const mockCartItems = [
@@ -315,7 +356,7 @@ describe('CartPage Component', () => {
 
     // Assert
     const description = screen.getByText(/This is a very long product de/);
-    expect(description.textContent.length).toBeLessThanOrEqual(30);
+    await expect(description.textContent.length).toBeLessThanOrEqual(30);
   });
 
   test('getToken_apiError_handlesGracefully', async () => {
@@ -349,7 +390,7 @@ describe('CartPage Component', () => {
     consoleLogSpy.mockRestore();
   });
 
-  test('removeCartItem_error_handlesGracefully', () => {
+  test('removeCartItem_error_handlesGracefully', async () => {
     // Arrange
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const mockCartItems = [
@@ -371,11 +412,11 @@ describe('CartPage Component', () => {
     fireEvent.click(removeButton);
 
     // Assert
-    expect(consoleLogSpy).toHaveBeenCalled();
+    await expect(consoleLogSpy).toHaveBeenCalled();
     consoleLogSpy.mockRestore();
   });
 
-  test('loginButton_click_navigatesToLoginWithState', () => {
+  test('loginButton_click_navigatesToLoginWithState', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' }
@@ -394,12 +435,12 @@ describe('CartPage Component', () => {
     fireEvent.click(loginButton);
 
     // Assert
-    expect(mockNavigate).toHaveBeenCalledWith('/login', {
+    await expect(mockNavigate).toHaveBeenCalledWith('/login', {
       state: '/cart'
     });
   });
 
-  test('updateAddressButton_noAddress_navigatesToProfile', () => {
+  test('updateAddressButton_noAddress_navigatesToProfile', async () => {
     // Arrange
     const mockCartItems = [
       { _id: '1', name: 'Laptop', price: 999, description: 'High performance laptop' }
@@ -411,6 +452,10 @@ describe('CartPage Component', () => {
     };
     useCart.mockReturnValue([mockCartItems, mockSetCart]);
     useAuth.mockReturnValue([{ user: mockUser, token: 'fake-token' }, mockSetAuth]);
+    
+    axios.get.mockResolvedValueOnce({ 
+      data: { clientToken: 'fake-braintree-token' } 
+    });
 
     // Act
     render(
@@ -419,14 +464,19 @@ describe('CartPage Component', () => {
       </MemoryRouter>
     );
 
+    // Wait for token fetch to complete
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalled();
+    });
+
     const updateButton = screen.getByText('Update Address');
     fireEvent.click(updateButton);
 
     // Assert
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/profile');
+    await expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/profile');
   });
 
-  test('totalPrice_withInvalidPrice_handlesError', () => {
+  test('totalPrice_withInvalidPrice_handlesError', async () => {
     // Arrange
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     
@@ -451,8 +501,8 @@ describe('CartPage Component', () => {
     );
 
     // The error should be caught and logged
-    expect(consoleLogSpy).toHaveBeenCalled();
-    expect(container).toBeTruthy();
+    await expect(consoleLogSpy).toHaveBeenCalled();
+    await expect(container).toBeTruthy();
     
     // Restore
     Number.prototype.toLocaleString = originalToLocaleString;
@@ -476,9 +526,7 @@ describe('CartPage Component', () => {
     axios.get.mockResolvedValueOnce({ 
       data: { clientToken: 'fake-braintree-token' } 
     });
-    axios.post.mockResolvedValueOnce({ 
-      data: { success: true } 
-    });
+    axios.post.mockResolvedValueOnce({ data: { success: true } });
 
     // Act
     render(
@@ -489,14 +537,26 @@ describe('CartPage Component', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
+    const payButton = screen.getByText('Make Payment');
+    await waitFor(() => {
+      expect(payButton).not.toBeDisabled();
+    });
+    fireEvent.click(payButton);
     
     // Assert
-    const payButton = screen.getByText('Make Payment');
-    fireEvent.click(payButton);
     await waitFor(() => {
-      expect(payButton).toBeDisabled();
+      expect(axios.post).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(window.localStorage.removeItem).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(mockSetCart).toHaveBeenCalledWith([]);
+    });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/orders');
     });
   });
 
@@ -529,16 +589,26 @@ describe('CartPage Component', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
-    }, {timeout: 5000});
+    }, { timeout: 5000 });
 
     const payButton = screen.getByText('Make Payment');
+    await waitFor(() => {
+      expect(payButton).not.toBeDisabled();
+    });
     fireEvent.click(payButton);
 
     // Assert
     await waitFor(() => {
+      expect(axios.post).toHaveBeenCalled();
+    });
+    await waitFor(() => {
       expect(payButton).not.toBeDisabled();
     });
 
+    expect(window.localStorage.removeItem).not.toHaveBeenCalled();
+    expect(mockSetCart).not.toHaveBeenCalledWith([]);
+    expect(mockNavigate).not.toHaveBeenCalledWith('/dashboard/user/orders');
+    expect(toast.success).not.toHaveBeenCalled();
 
     consoleLogSpy.mockRestore();
   });

@@ -71,7 +71,6 @@ describe('HomePage Component', () => {
     mockSetCart = jest.fn();
     useCart.mockReturnValue([mockCart, mockSetCart]);
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {})
   });
 
   test('renders_homePage_displaysProductsAndFilters', async () => {
@@ -744,5 +743,101 @@ describe('HomePage Component', () => {
 
     // Assert - button should be clickable (navigate handled by router)
     expect(moreDetailsButton).toBeInTheDocument();
+  });
+
+  test('getAllCategory_successFalse_doesNotSetCategories', async () => {
+    // Arrange - Line 27 coverage: when data.success is false
+    axios.get.mockImplementation((url) => {
+      if (url === '/api/v1/category/get-category') {
+        return Promise.resolve({ data: { success: false, category: [] } });
+      }
+      if (url === '/api/v1/product/product-count') {
+        return Promise.resolve({ data: { total: 0 } });
+      }
+      if (url.includes('/api/v1/product/product-list/')) {
+        return Promise.resolve({ data: { products: [] } });
+      }
+      return Promise.reject(new Error('Unknown endpoint'));
+    });
+
+    // Act
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    // Assert - categories should not be set when success is false
+    await waitFor(() => {
+      expect(screen.getByText('Filter By Category')).toBeInTheDocument();
+    });
+    
+    // No categories should be displayed
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  });
+
+  test('clearFilters_bothFiltersAppliedThenCleared_triggersGetAllProducts', async () => {
+    // Arrange - Line 90 coverage: specifically test the condition (!checked.length || !radio.length)
+    const mockCategories = [
+      { _id: '1', name: 'Electronics', slug: 'electronics' }
+    ];
+    const mockProducts = [
+      { _id: '1', name: 'Laptop', slug: 'laptop', price: 999, description: 'High performance laptop' }
+    ];
+    
+    const getCallHistory = [];
+    axios.get.mockImplementation((url) => {
+      if (url === '/api/v1/category/get-category') {
+        return Promise.resolve({ data: { success: true, category: mockCategories } });
+      }
+      if (url === '/api/v1/product/product-count') {
+        return Promise.resolve({ data: { total: 1 } });
+      }
+      if (url.includes('/api/v1/product/product-list/')) {
+        getCallHistory.push(url);
+        return Promise.resolve({ data: { products: mockProducts } });
+      }
+      return Promise.reject(new Error('Unknown endpoint'));
+    });
+    
+    axios.post.mockResolvedValue({ data: { products: mockProducts } });
+
+    // Act
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    // Wait for initial render
+    await waitFor(() => {
+      expect(screen.getByLabelText('Electronics')).toBeInTheDocument();
+    });
+
+    // Apply both filters: category AND price
+    const electronicsCheckbox = screen.getByLabelText('Electronics');
+    fireEvent.click(electronicsCheckbox);
+    
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledTimes(1);
+    });
+
+    const priceRadio = screen.getByRole('radio', { name: '$0 to 19' });
+    fireEvent.click(priceRadio);
+    
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledTimes(2);
+    });
+
+    jest.clearAllMocks();
+    const beforeClearGetCalls = getCallHistory.length;
+
+    // Clear category filter (radio still has value, so condition !checked.length is true)
+    fireEvent.click(electronicsCheckbox);
+
+    // Assert - getAllProducts should be called because checked.length is now 0 (line 90)
+    await waitFor(() => {
+      expect(getCallHistory.length).toBeGreaterThan(beforeClearGetCalls);
+    }, { timeout: 2000 });
   });
 });
