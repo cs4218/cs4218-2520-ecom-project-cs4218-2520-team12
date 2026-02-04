@@ -35,6 +35,7 @@ jest.mock("braintree-web-drop-in-react", () => {
         );
     };
 });
+// ...existing code...
 
 jest.mock("../../context/cart", () => ({
     useCart: jest.fn(),
@@ -525,152 +526,37 @@ describe('CartPage Component', () => {
     axios.get.mockResolvedValueOnce({ 
       data: { clientToken: 'fake-braintree-token' } 
     });
+    axios.post.mockResolvedValueOnce({ data: { success: true } });
 
-    test("payment_notLoggedIn_showsLoginPrompt", () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([{ user: null, token: "" }, mockSetAuth]);
+    // Act
+    render(
+      <MemoryRouter>
+        <CartPage />
+      </MemoryRouter>
+    );
 
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
+    await waitFor(() => {
+      expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
+    }, { timeout: 5000 });
 
-        // Assert
-        expect(screen.getByText("Hello Guest")).toBeInTheDocument();
-        expect(
-            screen.getByText(/please login to checkout/),
-        ).toBeInTheDocument();
-        expect(screen.getByText("Plase Login to checkout")).toBeInTheDocument();
+    const payButton = screen.getByText('Make Payment');
+    await waitFor(() => {
+      expect(payButton).not.toBeDisabled();
     });
-
-    test("payment_loggedIn_showsBraintreeDropIn", async () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        const mockUser = {
-            _id: "user1",
-            name: "John Doe",
-            email: "john@example.com",
-            address: "123 Main St",
-        };
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([
-            { user: mockUser, token: "fake-token" },
-            mockSetAuth,
-        ]);
-
-        axios.get.mockResolvedValueOnce({
-            data: { clientToken: "fake-braintree-token" },
-        });
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        // Assert
-        expect(
-            await screen.findByText(`Hello ${mockUser.name}`),
-        ).toBeInTheDocument();
-        expect(
-            await screen.findByTestId("braintree-dropin"),
-        ).toBeInTheDocument();
-    });
-
-    test("userAddress_displayed_showsCurrentAddress", () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        const mockUser = {
-            _id: "user1",
-            name: "John Doe",
-            email: "john@example.com",
-            address: "123 Main St, New York, NY 10001",
-        };
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([
-            { user: mockUser, token: "fake-token" },
-            mockSetAuth,
-        ]);
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        // Assert
-        expect(screen.getByText("Current Address")).toBeInTheDocument();
-        expect(
-            screen.getByText("123 Main St, New York, NY 10001"),
-        ).toBeInTheDocument();
-    });
-
-    test("updateAddress_clickButton_navigatesToProfile", () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        const mockUser = {
-            _id: "user1",
-            name: "John Doe",
-            email: "john@example.com",
-            address: "123 Main St",
-        };
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([
-            { user: mockUser, token: "fake-token" },
-            mockSetAuth,
-        ]);
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        const updateButton = screen.getByText("Update Address");
-        fireEvent.click(updateButton);
-
-        // Assert
-        expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/profile");
-    });
+    fireEvent.click(payButton);
     
-    // Wait for all async operations and state updates to complete
+    // Assert
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(window.localStorage.removeItem).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(mockSetCart).toHaveBeenCalledWith([]);
+    });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/orders');
     });
   });
 
@@ -692,214 +578,38 @@ describe('CartPage Component', () => {
     axios.get.mockResolvedValueOnce({ 
       data: { clientToken: 'fake-braintree-token' } 
     });
+    axios.post.mockRejectedValueOnce(new Error('Payment failed'));
 
-    test("removeCartItem_error_handlesGracefully", () => {
-        // Arrange
-        const consoleLogSpy = jest
-            .spyOn(console, "log")
-            .mockImplementation(() => {});
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        mockSetCart.mockImplementationOnce(() => {
-            throw new Error("Set cart error");
-        });
+    // Act
+    render(
+      <MemoryRouter>
+        <CartPage />
+      </MemoryRouter>
+    );
 
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
+    await waitFor(() => {
+      expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
+    }, { timeout: 5000 });
 
-        const removeButton = screen.getByText("Remove");
-        fireEvent.click(removeButton);
-
-        // Assert
-        expect(consoleLogSpy).toHaveBeenCalled();
-        consoleLogSpy.mockRestore();
+    const payButton = screen.getByText('Make Payment');
+    await waitFor(() => {
+      expect(payButton).not.toBeDisabled();
     });
+    fireEvent.click(payButton);
 
-    test("loginButton_click_navigatesToLoginWithState", () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([{ user: null, token: "" }, mockSetAuth]);
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        const loginButton = screen.getByText("Plase Login to checkout");
-        fireEvent.click(loginButton);
-
-        // Assert
-        expect(mockNavigate).toHaveBeenCalledWith("/login", {
-            state: "/cart",
-        });
-    });
-
-    test("updateAddressButton_noAddress_navigatesToProfile", () => {
-        // Arrange
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        const mockUser = {
-            _id: "user1",
-            name: "John Doe",
-            email: "john@example.com",
-        };
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([
-            { user: mockUser, token: "fake-token" },
-            mockSetAuth,
-        ]);
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        const updateButton = screen.getByText("Update Address");
-        fireEvent.click(updateButton);
-
-        // Assert
-        expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/profile");
-    });
-
-    test("totalPrice_withInvalidPrice_handlesError", () => {
-        // Arrange
-        const consoleLogSpy = jest
-            .spyOn(console, "log")
-            .mockImplementation(() => {});
-
-        // Mock toLocaleString to throw an error
-        const originalToLocaleString = Number.prototype.toLocaleString;
-        Number.prototype.toLocaleString = jest.fn(() => {
-            throw new Error("toLocaleString error");
-        });
-
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([{ user: null, token: "" }, mockSetAuth]);
-
-        // Act
-        const { container } = render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        // The error should be caught and logged
-        expect(consoleLogSpy).toHaveBeenCalled();
-        expect(container).toBeTruthy();
-
-        // Restore
-        Number.prototype.toLocaleString = originalToLocaleString;
-        consoleLogSpy.mockRestore();
-    });
-    
-    // Wait for all async operations and state updates to complete
+    // Assert
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalled();
     });
-
-    test("handlePayment_error_setsLoadingFalse", async () => {
-        // Arrange
-        const consoleLogSpy = jest
-            .spyOn(console, "log")
-            .mockImplementation(() => {});
-        const mockCartItems = [
-            {
-                _id: "1",
-                name: "Laptop",
-                price: 999,
-                description: "High performance laptop",
-            },
-        ];
-        const mockUser = {
-            _id: "user1",
-            name: "John Doe",
-            email: "john@example.com",
-            address: "123 Main St",
-        };
-        useCart.mockReturnValue([mockCartItems, mockSetCart]);
-        useAuth.mockReturnValue([
-            { user: mockUser, token: "fake-token" },
-            mockSetAuth,
-        ]);
-
-        axios.get.mockResolvedValueOnce({
-            data: { clientToken: "fake-braintree-token" },
-        });
-        axios.post.mockRejectedValueOnce(new Error("Payment failed"));
-
-        // Act
-        render(
-            <MemoryRouter>
-                <CartPage />
-            </MemoryRouter>,
-        );
-
-        await waitFor(
-            () => {
-                expect(
-                    screen.getByTestId("braintree-dropin"),
-                ).toBeInTheDocument();
-            },
-            { timeout: 5000 },
-        );
-
-        const payButton = screen.getByText("Make Payment");
-        await waitFor(() => {
-            expect(payButton).not.toBeDisabled();
-        });
-        fireEvent.click(payButton);
-
-        // Assert
-        await waitFor(() => {
-            expect(axios.post).toHaveBeenCalled();
-        });
-        await waitFor(() => {
-            expect(payButton).not.toBeDisabled();
-        });
-
-        expect(window.localStorage.removeItem).not.toHaveBeenCalled();
-        expect(mockSetCart).not.toHaveBeenCalledWith([]);
-        expect(mockNavigate).not.toHaveBeenCalledWith("/dashboard/user/orders");
-        expect(toast.success).not.toHaveBeenCalled();
-
-        consoleLogSpy.mockRestore();
+    await waitFor(() => {
+      expect(payButton).not.toBeDisabled();
     });
+
+    expect(window.localStorage.removeItem).not.toHaveBeenCalled();
+    expect(mockSetCart).not.toHaveBeenCalledWith([]);
+    expect(mockNavigate).not.toHaveBeenCalledWith('/dashboard/user/orders');
+    expect(toast.success).not.toHaveBeenCalled();
+
+    consoleLogSpy.mockRestore();
+  });
 });
