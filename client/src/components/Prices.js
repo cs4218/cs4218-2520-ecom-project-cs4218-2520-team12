@@ -1,3 +1,4 @@
+// Anthony Hermanto, A0269067R
 export const Prices = [
     {
       _id: 0,

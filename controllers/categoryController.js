@@ -1,3 +1,5 @@
+// Anthony Hermanto, A0269067R
+
 import categoryModel from "../models/categoryModel.js";
 import slugify from "slugify";
 export const createCategoryController = async (req, res) => {
