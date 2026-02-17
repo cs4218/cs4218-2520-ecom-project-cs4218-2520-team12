@@ -30,7 +30,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
 
   describe("PrivateRoute", () => {
     it("renders Spinner and does not call auth API when token is null", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + Basis Path - Invalid EC (no token) => authCheck not executed.
 
       // Arrange
@@ -47,7 +46,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner and does not call auth API when token is empty string (length 0)", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: BVA - Token length boundary at 0 (invalid) => authCheck not executed.
 
       // Arrange
@@ -61,8 +59,33 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
       expect(axios.get).not.toHaveBeenCalled();
     });
 
+    it("renders Spinner initially when token is present but auth API has not resolved yet", async () => {
+      // [Your Name], [Your Student ID]
+      // Strategy: Basis Path - Async pending path: ok defaults false until authCheck resolves.
+
+      // Arrange
+      useAuth.mockReturnValue([{ user: { role: 0 }, token: "t" }, jest.fn()]);
+
+      let resolveRequest;
+      const pending = new Promise((resolve) => {
+        resolveRequest = resolve;
+      });
+      axios.get.mockReturnValue(pending);
+
+      // Act
+      render(<PrivateRoute />);
+
+      // Assert (pending)
+      expect(screen.getByTestId("spinner")).toBeInTheDocument();
+      expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/user-auth");
+
+      // Assert (after resolve)
+      resolveRequest({ data: { ok: true } });
+      expect(await screen.findByTestId("outlet")).toBeInTheDocument();
+    });
+
     it("renders Outlet when token is present and API returns ok=true", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + Basis Path - Valid EC (token present) and ok=true branch.
 
       // Arrange
@@ -80,7 +103,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present and API returns ok=false", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + Basis Path - Valid EC (token present) but ok=false branch.
 
       // Arrange
@@ -98,7 +120,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present but API request throws", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP (Invalid EC) + Basis Path - Network/exception path => fallback to Spinner.
 
       // Arrange
@@ -117,7 +138,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
 
   describe("AdminRoute", () => {
     it("renders Spinner and does not call admin auth API when token is missing", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + Basis Path - Invalid EC (no token) => authCheck not executed.
 
       // Arrange
@@ -132,7 +152,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Outlet when token is present and admin auth API returns ok=true", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + Basis Path - Valid EC (token present) and ok=true branch.
 
       // Arrange
@@ -149,7 +168,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present and admin auth API returns ok=false", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP + BVA (boolean boundary) - ok=false edge => deny access.
 
       // Arrange
@@ -167,7 +185,6 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present but admin auth API request throws", async () => {
-      // [Your Name], [Your Student ID].
       // Strategy: EP (Invalid EC) + Basis Path - Exception path => fallback to Spinner.
 
       // Arrange
