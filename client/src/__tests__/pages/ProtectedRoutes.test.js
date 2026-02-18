@@ -1,3 +1,5 @@
+// Wong An Wei, A0273528X
+
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
@@ -30,6 +32,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
 
   describe("PrivateRoute", () => {
     it("renders Spinner and does not call auth API when token is null", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + Basis Path - Invalid EC (no token) => authCheck not executed.
 
       // Arrange
@@ -46,6 +49,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner and does not call auth API when token is empty string (length 0)", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: BVA - Token length boundary at 0 (invalid) => authCheck not executed.
 
       // Arrange
@@ -60,7 +64,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner initially when token is present but auth API has not resolved yet", async () => {
-      // [Your Name], [Your Student ID]
+      // Wong An Wei, A0273528X
       // Strategy: Basis Path - Async pending path: ok defaults false until authCheck resolves.
 
       // Arrange
@@ -86,6 +90,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Outlet when token is present and API returns ok=true", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + Basis Path - Valid EC (token present) and ok=true branch.
 
       // Arrange
@@ -103,6 +108,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present and API returns ok=false", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + Basis Path - Valid EC (token present) but ok=false branch.
 
       // Arrange
@@ -120,6 +126,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present but API request throws", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP (Invalid EC) + Basis Path - Network/exception path => fallback to Spinner.
 
       // Arrange
@@ -138,6 +145,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
 
   describe("AdminRoute", () => {
     it("renders Spinner and does not call admin auth API when token is missing", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + Basis Path - Invalid EC (no token) => authCheck not executed.
 
       // Arrange
@@ -152,6 +160,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Outlet when token is present and admin auth API returns ok=true", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + Basis Path - Valid EC (token present) and ok=true branch.
 
       // Arrange
@@ -168,6 +177,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present and admin auth API returns ok=false", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP + BVA (boolean boundary) - ok=false edge => deny access.
 
       // Arrange
@@ -185,6 +195,7 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
     });
 
     it("renders Spinner when token is present but admin auth API request throws", async () => {
+      // Wong An Wei, A0273528X
       // Strategy: EP (Invalid EC) + Basis Path - Exception path => fallback to Spinner.
 
       // Arrange

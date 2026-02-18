@@ -1,3 +1,5 @@
+// Wong An Wei, A0273528X
+
 import { updateProfileController } from "../authController.js";
 
 import userModel from "../../models/userModel.js";

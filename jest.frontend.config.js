@@ -38,6 +38,7 @@ module.exports = {
         "client/src/pages/Search.js",
         "client/src/pages/user/Orders.js",
         "client/src/pages/user/Profile.js",
+        "client/src/pages/admin/Users.js",
         "client/src/components/Form/SearchInput.js",
         "client/src/components/Routes/Private.js",
         "client/src/components/Routes/AdminRoute.js",
