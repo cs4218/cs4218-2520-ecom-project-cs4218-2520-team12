@@ -60,6 +60,8 @@ Object.defineProperty(window, 'localStorage', {
  * - "uncheckCategory_removesFromFilter" -> Filter partition: filter removal behavior
  * - "resetFiltersButton_click_reloadsPage" -> Filter partition: reset functionality
  * - "moreDetailsButton_click_navigatesToProductPage" -> Navigation partition: product detail routing
+ * - "getAllCategory_successFalse_doesNotSetCategories" -> Equivalence class: category fetch with success=false response
+ * - "clearFilters_bothFiltersAppliedThenCleared_triggersGetAllProducts" -> Filter partition: clearing filters after multiple filters applied
  */
 
 describe('HomePage Component', () => {
