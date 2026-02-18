@@ -36,7 +36,12 @@ module.exports = {
         "client/src/pages/Contact.js",
         "client/src/pages/ProductDetails.js",
         "client/src/pages/Search.js",
+        "client/src/pages/Auth/Login.js",
+        "client/src/pages/Auth/Register.js",
+        "client/src/pages/user/Dashboard.js",
         "client/src/components/Form/SearchInput.js",
+        "client/src/components/Routes/Private.js",
+        "client/src/components/UserMenu.js",
     ],
     coverageThreshold: {
         global: {
