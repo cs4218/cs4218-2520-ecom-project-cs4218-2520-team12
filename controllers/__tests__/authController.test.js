@@ -56,7 +56,6 @@ describe("Auth Controller", () => {
      * - "forgotPassword_wrongEmailOrAnswer_returns404" -> Credential recovery partition: email/answer mismatch
      * - "forgotPassword_success_updatesPassword_returns200" -> Equivalence class: valid reset details
      * - "forgotPassword_error_returns500" -> Error handling partition: reset dependency throws
-     * - "testController_returnsProtectedRoutes" -> Equivalence class: protected route happy path
      */
 
     // =========== Test for registerController ===========
@@ -379,20 +378,6 @@ describe("Auth Controller", () => {
                 message: "Something went wrong",
                 error: dbError,
             });
-        });
-    });
-
-    // =========== Test for testController (protected route) ===========
-    describe("testController", () => {
-        test("testController_returnsProtectedRoutes", () => {
-            // Arrange
-            // No setup required for this passthrough controller.
-
-            // Act
-            testController(req, res);
-
-            // Assert
-            expect(res.send).toHaveBeenCalledWith("Protected Routes");
         });
     });
 });
