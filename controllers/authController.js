@@ -155,7 +155,6 @@ export const forgotPasswordController = async (req, res) => {
 };
 
 //test controller
-/* istanbul ignore next */
 export const testController = (req, res) => {
   try {
     res.send("Protected Routes");

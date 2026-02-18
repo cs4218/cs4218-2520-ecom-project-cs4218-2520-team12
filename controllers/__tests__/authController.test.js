@@ -1,4 +1,14 @@
 // Amos Chee Tian Ee, A0273476U
+/**
+ * Test Coverage Scope:
+ * This test file covers the following functions from authController.js:
+ * - registerController (lines 7-64)
+ * - loginController (lines 66-118)
+ * - forgotPasswordController (lines 120-157)
+ * 
+ * Functions excluded from testing (marked with istanbul ignore in source):
+ * - testController, updateProfileController, getOrdersController, getAllOrdersController, orderStatusController
+ */
 import {
     registerController,
     loginController,
@@ -49,19 +59,36 @@ describe("Auth Controller", () => {
 
     /**
      * Test-to-partition mapping (for MS1 traceability)
+     * 
+     * registerController:
      * - "register_missingName_returnsValidationError" -> Input validation partition: missing required name
+     * - "register_missingEmail_returnsValidationError" -> Input validation partition: missing required email
+     * - "register_missingPassword_returnsValidationError" -> Input validation partition: missing required password
+     * - "register_missingPhone_returnsValidationError" -> Input validation partition: missing required phone
+     * - "register_missingAddress_returnsValidationError" -> Input validation partition: missing required address
+     * - "register_missingAnswer_returnsValidationError" -> Input validation partition: missing required answer
      * - "register_existingUser_returnsAlreadyRegistered" -> Duplicate-user partition: existing account by email
      * - "register_success_createsUserAndReturns201" -> Equivalence class: valid registration payload
      * - "register_error_returns500" -> Error handling partition: registration dependency throws
+     * 
+     * loginController:
      * - "login_missingCredentials_returns404" -> Input validation partition: email/password missing
      * - "login_userNotFound_returns404" -> Equivalence class: email not found
      * - "login_wrongPassword_returns200" -> Credential partition: incorrect password
      * - "login_success_returnsTokenAndUser" -> Equivalence class: valid credentials and token generation
      * - "login_error_returns500" -> Error handling partition: login dependency throws
+     * 
+     * forgotPasswordController:
      * - "forgotPassword_missingEmail_sends400Validation" -> Input validation partition: missing email
+     * - "forgotPassword_missingAnswer_sends400Validation" -> Input validation partition: missing answer
+     * - "forgotPassword_missingNewPassword_sends400Validation" -> Input validation partition: missing new password
      * - "forgotPassword_wrongEmailOrAnswer_returns404" -> Credential recovery partition: email/answer mismatch
      * - "forgotPassword_success_updatesPassword_returns200" -> Equivalence class: valid reset details
      * - "forgotPassword_error_returns500" -> Error handling partition: reset dependency throws
+     * 
+     * testController:
+     * - "testController_returnsProtectedRoutes" -> Equivalence class: successful protected route access
+     * - "testController_error_returnsError" -> Error handling partition: exception in try block
      */
 
     // =========== Test for registerController ===========
