@@ -65,7 +65,6 @@ describe("Admin Users Page", () => {
     });
 
     it("adminUsers_routeRendersPage", () => {
-        // Wong An Wei, A0273528X
         renderWithRouter();
 
         expect(screen.getByTestId("layout")).toBeInTheDocument();
@@ -75,7 +74,6 @@ describe("Admin Users Page", () => {
     });
 
     it("adminUsers_layoutTitleDisplayed", () => {
-        // Wong An Wei, A0273528X
         renderWithRouter();
 
         expect(screen.getByTestId("layout-title")).toHaveTextContent(
@@ -84,7 +82,6 @@ describe("Admin Users Page", () => {
     });
 
     it("adminUsers_adminMenuDisplayed", () => {
-        // Wong An Wei, A0273528X
         renderWithRouter();
 
         expect(screen.getByTestId("admin-menu")).toBeInTheDocument();

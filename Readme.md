@@ -148,5 +148,3 @@ To begin unit testing with Jest in your project, follow these steps:
 ## 6. MS1 Workload Distribution
 
 - Wong An Wei (A0273528X): Unit tests for Protected Routes, Orders, Profile, Admin View Users; backend tests for `orderController` and `updateProfileController`.
-- Member 2 (TODO): 
-- Member 3 (TODO): 
