@@ -10,7 +10,7 @@ module.exports = {
 
     // jest code coverage
     collectCoverage: true,
-    collectCoverageFrom: ["controllers/**", "!controllers/authController.js"],
+    collectCoverageFrom: ["controllers/**"],
     coverageThreshold: {
         global: {
             lines: 95,

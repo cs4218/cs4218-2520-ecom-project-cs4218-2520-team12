@@ -4,8 +4,13 @@ import {
     loginController,
     forgotPasswordController,
     testController,
+    updateProfileController,
+    getOrdersController,
+    getAllOrdersController,
+    orderStatusController,
 } from "../authController.js";
 import userModel from "../../models/userModel.js";
+import orderModel from "../../models/orderModel.js";
 import { comparePassword, hashPassword } from "../../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 
@@ -76,6 +81,96 @@ describe("Auth Controller", () => {
 
             // Assert
             expect(res.send).toHaveBeenCalledWith({ error: "Name is Required" });
+            expect(userModel.findOne).not.toHaveBeenCalled();
+        });
+
+        test("register_missingEmail_returnsValidationError", async () => {
+            // Arrange
+            req = createReq({
+                name: "Alice",
+                password: "secret123",
+                phone: "1234",
+                address: "addr",
+                answer: "blue",
+            });
+
+            // Act
+            await registerController(req, res);
+
+            // Assert
+            expect(res.send).toHaveBeenCalledWith({ message: "Email is Required" });
+            expect(userModel.findOne).not.toHaveBeenCalled();
+        });
+
+        test("register_missingPassword_returnsValidationError", async () => {
+            // Arrange
+            req = createReq({
+                name: "Alice",
+                email: "u@test.com",
+                phone: "1234",
+                address: "addr",
+                answer: "blue",
+            });
+
+            // Act
+            await registerController(req, res);
+
+            // Assert
+            expect(res.send).toHaveBeenCalledWith({ message: "Password is Required" });
+            expect(userModel.findOne).not.toHaveBeenCalled();
+        });
+
+        test("register_missingPhone_returnsValidationError", async () => {
+            // Arrange
+            req = createReq({
+                name: "Alice",
+                email: "u@test.com",
+                password: "secret123",
+                address: "addr",
+                answer: "blue",
+            });
+
+            // Act
+            await registerController(req, res);
+
+            // Assert
+            expect(res.send).toHaveBeenCalledWith({ message: "Phone no is Required" });
+            expect(userModel.findOne).not.toHaveBeenCalled();
+        });
+
+        test("register_missingAddress_returnsValidationError", async () => {
+            // Arrange
+            req = createReq({
+                name: "Alice",
+                email: "u@test.com",
+                password: "secret123",
+                phone: "1234",
+                answer: "blue",
+            });
+
+            // Act
+            await registerController(req, res);
+
+            // Assert
+            expect(res.send).toHaveBeenCalledWith({ message: "Address is Required" });
+            expect(userModel.findOne).not.toHaveBeenCalled();
+        });
+
+        test("register_missingAnswer_returnsValidationError", async () => {
+            // Arrange
+            req = createReq({
+                name: "Alice",
+                email: "u@test.com",
+                password: "secret123",
+                phone: "1234",
+                address: "addr",
+            });
+
+            // Act
+            await registerController(req, res);
+
+            // Assert
+            expect(res.send).toHaveBeenCalledWith({ message: "Answer is Required" });
             expect(userModel.findOne).not.toHaveBeenCalled();
         });
 
@@ -306,7 +401,33 @@ describe("Auth Controller", () => {
 
             // Assert
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith({ message: "Emai is required" });
+            expect(res.send).toHaveBeenCalledWith({ message: "Email is required" });
+        });
+
+        test("forgotPassword_missingAnswer_sends400Validation", async () => {
+            // Arrange
+            req = createReq({ email: "u@test.com", newPassword: "new123456" });
+            userModel.findOne.mockResolvedValue(null);
+
+            // Act
+            await forgotPasswordController(req, res);
+
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith({ message: "Answer is required" });
+        });
+
+        test("forgotPassword_missingNewPassword_sends400Validation", async () => {
+            // Arrange
+            req = createReq({ email: "u@test.com", answer: "blue" });
+            userModel.findOne.mockResolvedValue(null);
+
+            // Act
+            await forgotPasswordController(req, res);
+
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith({ message: "New Password is required" });
         });
 
         test("forgotPassword_wrongEmailOrAnswer_returns404", async () => {
@@ -380,5 +501,39 @@ describe("Auth Controller", () => {
                 error: dbError,
             });
         });
+    });
+
+    // =========== Test for testController ===========
+    describe("testController", () => {
+        test("testController_returnsProtectedRoutes", () => {
+            // Arrange
+            req = createReq({});
+            res.send = jest.fn();
+
+            // Act
+            testController(req, res);
+            
+            // Assert
+            expect(res.send).toHaveBeenCalledWith("Protected Routes");
+        });
+
+        test("testController_error_returnsError", () => {
+            // Arrange
+            req = createReq({});
+            const testError = new Error("test failure");
+            res.send = jest.fn()
+                .mockImplementationOnce(() => { throw testError; })
+                .mockImplementationOnce(() => {});
+
+            // Act
+            testController(req, res);
+
+            // Assert
+            expect(console.log).toHaveBeenCalledWith(testError);
+            expect(res.send).toHaveBeenCalledTimes(2);
+            expect(res.send).toHaveBeenNthCalledWith(1, "Protected Routes");
+            expect(res.send).toHaveBeenNthCalledWith(2, { error: testError });
+        });
+
     });
 });

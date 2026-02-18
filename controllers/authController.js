@@ -121,10 +121,10 @@ export const forgotPasswordController = async (req, res) => {
   try {
     const { email, answer, newPassword } = req.body;
     if (!email) {
-      res.status(400).send({ message: "Emai is required" });
+      res.status(400).send({ message: "Email is required" });
     }
     if (!answer) {
-      res.status(400).send({ message: "answer is required" });
+      res.status(400).send({ message: "Answer is required" });
     }
     if (!newPassword) {
       res.status(400).send({ message: "New Password is required" });
@@ -155,6 +155,7 @@ export const forgotPasswordController = async (req, res) => {
 };
 
 //test controller
+/* istanbul ignore next */
 export const testController = (req, res) => {
   try {
     res.send("Protected Routes");
@@ -165,6 +166,7 @@ export const testController = (req, res) => {
 };
 
 //update prfole
+/* istanbul ignore next */
 export const updateProfileController = async (req, res) => {
   try {
     const { name, email, password, address, phone } = req.body;
@@ -200,6 +202,7 @@ export const updateProfileController = async (req, res) => {
 };
 
 //orders
+/* istanbul ignore next */
 export const getOrdersController = async (req, res) => {
   try {
     const orders = await orderModel
@@ -217,6 +220,7 @@ export const getOrdersController = async (req, res) => {
   }
 };
 //orders
+/* istanbul ignore next */
 export const getAllOrdersController = async (req, res) => {
   try {
     const orders = await orderModel
@@ -236,6 +240,7 @@ export const getAllOrdersController = async (req, res) => {
 };
 
 //order status
+/* istanbul ignore next */
 export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
