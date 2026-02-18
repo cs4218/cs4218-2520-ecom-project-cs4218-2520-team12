@@ -98,6 +98,9 @@ Object.defineProperty(window, "localStorage", {
  * - "removeCartItem_error_handlesGracefully" -> Error handling partition: cart operation failure
  * - "loginButton_click_navigatesToLoginWithState" -> Navigation partition: login redirect with state
  * - "updateAddressButton_noAddress_navigatesToProfile" -> Edge case: missing address data
+ * - "totalPrice_withInvalidPrice_handlesError" -> Error handling partition: invalid price data handling
+ * - "handlePayment_success_clearsCartAndNavigates" -> Equivalence class: successful payment flow
+ * - "handlePayment_error_setsLoadingFalse" -> Error handling partition: payment processing failure
  * - "totalPrice_withInvalidPrice_handlesError" -> Error handling partition: price formatting error
  * - "handlePayment_success_clearsCartAndNavigates" -> Equivalence class: successful payment flow
  * - "handlePayment_error_setsLoadingFalse" -> Error handling partition: payment processing failure
