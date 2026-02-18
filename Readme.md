@@ -144,3 +144,12 @@ To begin unit testing with Jest in your project, follow these steps:
      ```bash
      npm run test
      ```
+
+## 6. MS1 Workload Distribution
+
+- Wong An Wei (A0273528X): Unit tests for Protected Routes, Orders, Profile, Admin View Users.
+- Anthony Hermanto (A0269607R): Unit tests for Home, Cart, Category, Payment.
+- David Vicedo (A0273234J): Unit tests for Product, Search, Contact, Policy.
+- Amos Chee Tian Ee (A0273476U): Unit tests for Registration, Login, General.
+- Snodgrass Eliot Peter (A0269684H): Unit tests for Admin Dashboard, Admin Actions, Admin View Orders, Admin View Products.
+
