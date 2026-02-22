@@ -41,9 +41,13 @@ module.exports = {
         "client/src/pages/user/Orders.js",
         "client/src/pages/user/Profile.js",
         "client/src/pages/admin/Users.js",
+        "client/src/pages/Auth/Login.js",
+        "client/src/pages/Auth/Register.js",
+        "client/src/pages/user/Dashboard.js",
         "client/src/components/Form/SearchInput.js",
         "client/src/components/Routes/Private.js",
         "client/src/components/Routes/AdminRoute.js",
+        "client/src/components/UserMenu.js",
     ],
     coverageThreshold: {
         global: {
