@@ -1,10 +1,11 @@
+// Amos Chee Tian Ee, A0273476U
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import toast from 'react-hot-toast';
-import Register from './Register';
+import Register from '../../pages/Auth/Register';
 
 // Mocking axios.post
 jest.mock('axios');
@@ -93,5 +94,39 @@ describe('Register Component', () => {
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
     expect(toast.error).toHaveBeenCalledWith('Something went wrong');
+  });
+
+  it('should display error message when success is false', async () => {
+    // Arrange
+    const errorMessage = 'Email already registered';
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: false,
+        message: errorMessage
+      }
+    });
+
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={['/register']}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Act
+    fireEvent.change(getByPlaceholderText('Enter Your Name'), { target: { value: 'John Doe' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Email'), { target: { value: 'existing@example.com' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Password'), { target: { value: 'password123' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Phone'), { target: { value: '1234567890' } });
+    fireEvent.change(getByPlaceholderText('Enter Your Address'), { target: { value: '123 Street' } });
+    fireEvent.change(getByPlaceholderText('Enter Your DOB'), { target: { value: '2000-01-01' } });
+    fireEvent.change(getByPlaceholderText('What is Your Favorite sports'), { target: { value: 'Football' } });
+
+    fireEvent.click(getByText('REGISTER'));
+
+    // Assert
+    await waitFor(() => expect(axios.post).toHaveBeenCalled());
+    expect(toast.error).toHaveBeenCalledWith(errorMessage);
   });
 });

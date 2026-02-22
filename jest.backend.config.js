@@ -6,11 +6,17 @@ module.exports = {
     testEnvironment: "node",
 
     // which test to run
-    testMatch: ["<rootDir>/controllers/__tests__/*.test.js"],
+    testMatch: [
+        "<rootDir>/controllers/__tests__/*.test.js",
+        "<rootDir>/models/__tests__/*.test.js",
+    ],
 
     // jest code coverage
     collectCoverage: true,
-    collectCoverageFrom: ["controllers/**", "!controllers/authController.js"],
+    collectCoverageFrom: [
+        "controllers/**",
+        "models/**",
+    ],
     coverageThreshold: {
         global: {
             lines: 95,
