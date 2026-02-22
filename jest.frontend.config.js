@@ -36,6 +36,8 @@ module.exports = {
         "client/src/pages/Contact.js",
         "client/src/pages/ProductDetails.js",
         "client/src/pages/Search.js",
+        "client/src/pages/Auth/Login.js",
+        "client/src/pages/Auth/Register.js",
         "client/src/pages/user/Orders.js",
         "client/src/pages/user/Profile.js",
         "client/src/pages/admin/Users.js",

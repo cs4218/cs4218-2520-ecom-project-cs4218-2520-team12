@@ -1,10 +1,11 @@
+// Amos Chee Tian Ee, A0273476U
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import toast from 'react-hot-toast';
-import Login from './Login';
+import Login from '../../pages/Auth/Login';
 
 // Mocking axios.post
 jest.mock('axios');
@@ -153,5 +154,57 @@ describe('Login Component', () => {
 
         await waitFor(() => expect(axios.post).toHaveBeenCalled());
         expect(toast.error).toHaveBeenCalledWith('Something went wrong');
+    });
+
+    it('should display error message when success is false', async () => {
+        // Arrange
+        const errorMessage = 'Invalid email or password';
+        axios.post.mockResolvedValueOnce({
+            data: {
+                success: false,
+                message: errorMessage
+            }
+        });
+        axios.get.mockResolvedValueOnce({
+            data: {
+                category: [/* ... */]
+            }
+        });
+
+        const { getByPlaceholderText, getByText } = render(
+            <MemoryRouter initialEntries={['/login']}>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Act
+        fireEvent.change(getByPlaceholderText('Enter Your Email'), { target: { value: 'test@example.com' } });
+        fireEvent.change(getByPlaceholderText('Enter Your Password'), { target: { value: 'password123' } });
+        fireEvent.click(getByText('LOGIN'));
+
+        // Assert
+        await waitFor(() => expect(axios.post).toHaveBeenCalled());
+        expect(toast.error).toHaveBeenCalledWith(errorMessage);
+    });
+
+    it('should navigate to forgot password page when forgot password button is clicked', () => {
+        // Arrange
+        const { getByText } = render(
+            <MemoryRouter initialEntries={['/login']}>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<div>Forgot Password Page</div>} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Act
+        const forgotPasswordButton = getByText('Forgot Password');
+        fireEvent.click(forgotPasswordButton);
+
+        // Assert
+        expect(getByText('Forgot Password Page')).toBeInTheDocument();
     });
 });

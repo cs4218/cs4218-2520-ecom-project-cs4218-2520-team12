@@ -15,7 +15,6 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         "controllers/**",
-        "!controllers/authController.js",
         "models/**",
     ],
     coverageThreshold: {
