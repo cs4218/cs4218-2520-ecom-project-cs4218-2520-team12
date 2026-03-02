@@ -1,6 +1,3 @@
-/* eslint-disable testing-library/no-unnecessary-act */
-/* eslint-disable testing-library/prefer-presence-queries */
-/* eslint-disable testing-library/no-wait-for-multiple-assertions */
 // Anthony Hermanto, A0269067R
 
 /**
