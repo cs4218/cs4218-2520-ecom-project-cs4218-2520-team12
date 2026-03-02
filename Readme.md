@@ -145,3 +145,21 @@ To begin unit testing with Jest in your project, follow these steps:
 ## 7. CI/CD Github Link
 
 The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team12/actions/runs/22258737175/job/64393608454) or https://github.com/cs4218/cs4218-2520-ecom-project-cs4218-2520-team12/actions/runs/22258737175/job/64393608454
+
+## 8. MS2 Workload Distribution
+
+- Anthony Hermanto (A0269607R)
+  - Integration Tests:
+    - HomePage Filters and Pagination Integration Test
+      - `client/src/__tests__/pages/homepage-filters-pagination.int.test.js`
+    - Cart and Checkout Integration Test
+      - `client/src/__tests__/pages/cart-checkout.int.test.js`
+    - Payment Routes Integration Test
+      - `controllers/__tests__/payment.routes.int.test.js`
+  - UI Tests (Playwright):
+    - Checkout Success UI Test
+      - `ui/checkout-success.spec.js`
+    - Checkout Payment Failure UI Test
+      - `ui/checkout-payment-failure.spec.js`
+    - Checkout Failure UI Test
+      - `ui/checkout-failure.spec.js`
