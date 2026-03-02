@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/no-wait-for-multiple-assertions */
 // Anthony Hermanto, A0269067R
 
 /**
