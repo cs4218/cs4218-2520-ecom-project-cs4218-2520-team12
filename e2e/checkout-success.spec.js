@@ -396,4 +396,3 @@ test.describe('Checkout Success Flow', () => {
     console.log('✓ Cart total is calculated');
   });
 });
-
