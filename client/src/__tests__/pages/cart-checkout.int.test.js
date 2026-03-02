@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-unnecessary-act */
 /* eslint-disable testing-library/prefer-presence-queries */
 /* eslint-disable testing-library/no-wait-for-multiple-assertions */
 // Anthony Hermanto, A0269067R
@@ -49,7 +50,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 import axios from "axios";
@@ -803,12 +804,21 @@ describe('CartPage Cart-Checkout Integration Tests', () => {
       </MemoryRouter>
     );
 
+    // Wait for DropIn to render and instance to be set
+    await waitFor(() => {
+      expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
+    });
+
     await waitFor(() => {
       expect(screen.getByText('Make Payment')).toBeInTheDocument();
     });
 
     const paymentButton = screen.getByText('Make Payment');
-    fireEvent.click(paymentButton);
+    
+    // Use act to ensure all state updates complete
+    await act(async () => {
+      fireEvent.click(paymentButton);
+    });
 
     // Assert
     await waitFor(() => {
@@ -821,7 +831,7 @@ describe('CartPage Cart-Checkout Integration Tests', () => {
           ])
         })
       );
-    });
+    }, { timeout: 3000 });
 
     expect(localStorage.removeItem).toHaveBeenCalledWith('cart');
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/orders');
@@ -1840,18 +1850,29 @@ describe('CartPage Cart-Checkout Integration Tests', () => {
       </MemoryRouter>
     );
 
+    // Wait for DropIn to render and instance to be set
+    await waitFor(() => {
+      expect(screen.getByTestId('braintree-dropin')).toBeInTheDocument();
+    });
+
     await waitFor(() => {
       expect(screen.getByText('Make Payment')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Make Payment'));
+    // Use act to ensure all state updates complete
+    await act(async () => {
+      fireEvent.click(screen.getByText('Make Payment'));
+    });
 
     // Assert - All cart state cleared
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalled();
+    }, { timeout: 3000 });
+
     await waitFor(() => {
       expect(localStorage.removeItem).toHaveBeenCalledWith('cart');
     });
 
-    expect(axios.post).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard/user/orders');
     
     // Context would be updated with empty cart via setCart([])
