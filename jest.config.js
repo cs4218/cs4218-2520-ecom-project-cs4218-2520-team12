@@ -1,5 +1,5 @@
 // jest.config.js  (root)
-module.exports = {
+export default {
     // Run each sub‑project with its own config / displayName
     projects: [
         "<rootDir>/jest.backend.config.js",
