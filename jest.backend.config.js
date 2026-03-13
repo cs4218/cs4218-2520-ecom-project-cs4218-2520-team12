@@ -9,6 +9,7 @@ module.exports = {
     testMatch: [
         "<rootDir>/controllers/__tests__/*.test.js",
         "<rootDir>/models/__tests__/*.test.js",
+        "<rootDir>/tests/integration/*.int.test.js",
     ],
 
     // jest code coverage
