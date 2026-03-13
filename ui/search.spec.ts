@@ -1,5 +1,29 @@
 // David Vicedo, A0273234J
 
+/**
+ * MS2 UI End-to-End Tests - Search Flow (Success and Empty Results)
+ *
+ * Testing Approach: Black-box End-to-End Testing
+ *
+ * Rationale
+ * These tests validate real search behaviour through the browser against the
+ * live frontend and backend. They assert only user-visible outcomes and route
+ * transitions, without mocking APIs or internal modules.
+ *
+ * Scope
+ * - submit a search from homepage and verify successful results rendering
+ * - submit a search with no matches and verify empty-state rendering
+ *
+ * Key Assertions
+ * - URL navigates to /search after form submission
+ * - result cards and visible product information appear on successful search
+ * - empty-state message appears when there are no matching products
+ *
+ * Environment Requirements
+ * - frontend server running
+ * - backend server running
+ * - database seeded with products and categories
+ */
 import { test, expect, type Page } from "@playwright/test";
 
 const HOME_PATH = "/";
@@ -26,8 +50,26 @@ const submitSearch = async (page: Page, keyword: string): Promise<void> => {
 };
 
 test.describe("MS2 - Search Flow", () => {
+    /**
+     * Test Case: Search Success Flow
+     *
+     * Scenario
+     * A user searches with a valid keyword and views matching product results.
+     *
+     * Steps
+     * 1. Open homepage and locate the search input.
+     * 2. Submit a common keyword.
+     * 3. Verify navigation to /search.
+     * 4. Verify at least one visible product result card.
+     *
+     * Expected Behaviour
+     * - search route loads successfully
+     * - product result cards with name and price are visible
+     */
     // David Vicedo, A0273234J
-    test("shows product results for a valid search keyword", async ({ page }) => {
+    test("shows product results for a valid search keyword", async ({
+        page,
+    }) => {
         // Arrange
         await page.goto(HOME_PATH);
         await expect(getSearchInput(page)).toBeVisible();
@@ -56,7 +98,9 @@ test.describe("MS2 - Search Flow", () => {
             }
 
             const firstResultCard = resultCards.first();
-            const firstProductName = firstResultCard.getByRole("heading").first();
+            const firstProductName = firstResultCard
+                .getByRole("heading")
+                .first();
             const firstProductPrice = firstResultCard
                 .locator("p.card-text")
                 .filter({ hasText: /\$/ })
@@ -71,9 +115,26 @@ test.describe("MS2 - Search Flow", () => {
             break;
         }
 
+        // Assert
         expect(foundResults).toBeTruthy();
     });
 
+    /**
+     * Test Case: Search Empty Results Flow
+     *
+     * Scenario
+     * A user searches with a keyword that does not match any product.
+     *
+     * Steps
+     * 1. Open homepage and locate the search input.
+     * 2. Submit a random unlikely keyword.
+     * 3. Verify navigation to /search.
+     * 4. Verify the empty-state message is shown.
+     *
+     * Expected Behaviour
+     * - search route loads successfully
+     * - empty-state message indicates that no products were found
+     */
     // David Vicedo, A0273234J
     test("shows empty-state message when search has no matches", async ({
         page,

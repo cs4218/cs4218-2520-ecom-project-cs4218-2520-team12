@@ -1,5 +1,32 @@
 // David Vicedo, A0273234J
 
+/**
+ * MS2 UI End-to-End Tests - Browse to Product Details Flow
+ *
+ * Testing Approach: Black-box End-to-End Testing
+ *
+ * Rationale
+ * This test validates a real user journey in a browser using the live
+ * frontend and backend stack. It verifies navigation and rendered outcomes
+ * only, without relying on internal implementation details.
+ *
+ * Scope
+ * - browse products on the homepage
+ * - open a product details page
+ * - validate product details and related products section
+ * - navigate to a related product details page
+ *
+ * Key Assertions
+ * - URL updates to product detail routes
+ * - product details UI is visible
+ * - related products UI is visible
+ * - related-product navigation leads to a different product details route
+ *
+ * Environment Requirements
+ * - frontend server running
+ * - backend server running
+ * - database seeded with products and categories
+ */
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const HOME_PATH = "/";
@@ -74,6 +101,25 @@ const readCardName = async (card: Locator): Promise<string> => {
 };
 
 test.describe("MS2 - Browse to Product Details flow", () => {
+    /**
+     * Test Case: Browse from Home to Product Details to Related Product Details
+     *
+     * Scenario
+     * A user browses products from the homepage, opens one product details page,
+     * and continues exploration via a related product.
+     *
+     * Steps
+     * 1. Open homepage and verify products are visible.
+     * 2. Open a product details page using More Details.
+     * 3. Verify product details and related products section.
+     * 4. Open a related product using More Details.
+     * 5. Verify URL and details page update to the related product.
+     *
+     * Expected Behaviour
+     * - navigation proceeds from home to product details routes
+     * - product details content is visible
+     * - related product navigation updates route and rendered product details
+     */
     // David Vicedo, A0273234J
     test("navigates from homepage to product details and then to a related product", async ({
         page,
@@ -219,6 +265,7 @@ test.describe("MS2 - Browse to Product Details flow", () => {
             break;
         }
 
+        // Assert
         expect(completed).toBeTruthy();
     });
 });
