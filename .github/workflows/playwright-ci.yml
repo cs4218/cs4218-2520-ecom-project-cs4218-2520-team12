@@ -1,0 +1,48 @@
+name: Playwright E2E Pipeline
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test:
+        name: Run Playwright Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.x"
+
+            - name: Install dependencies
+              run: npm install && cd client && npm install && cd ..
+
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps
+
+            - name: Start backend server
+              run: npm run start > backend.log 2>&1 &
+
+            - name: Wait for backend server
+              run: |
+                  for i in {1..30}; do
+                    if curl -fsS http://localhost:6060 > /dev/null; then
+                      echo "Backend server is up"
+                      exit 0
+                    fi
+                    sleep 2
+                  done
+                  echo "Backend server failed to start in time"
+                  cat backend.log || true
+                  exit 1
+
+            - name: Run Playwright tests
+              run: npm run test:e2e
+              env:
+                  NODE_ENV: test
