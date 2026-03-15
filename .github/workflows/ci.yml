@@ -21,12 +21,22 @@ jobs:
                   node-version: "20.x"
 
             - name: Install dependencies
-              run: npm install && cd client && npm install && cd ..
+              run: |
+                  npm install
+                  cd client
+                  npm install
+                  cd ..
 
             - name: Run backend tests
               run: npm run test:backend
               env:
                   NODE_ENV: test
+                  PORT: 6060
+                  MONGO_URL: ${{ secrets.MONGO_URL }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+                  BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
+                  BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
+                  BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
 
             - name: Run frontend tests
               run: npm run test:frontend

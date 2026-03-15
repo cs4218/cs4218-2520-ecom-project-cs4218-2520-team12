@@ -39,7 +39,7 @@ jobs:
               env:
                   PORT: 6060
                   DEV_MODE: development
-                  NODE_ENV: test
+                  NODE_ENV: development
                   MONGO_URL: ${{ secrets.MONGO_URL }}
                   JWT_SECRET: ${{ secrets.JWT_SECRET }}
                   BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
