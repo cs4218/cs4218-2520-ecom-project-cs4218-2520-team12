@@ -151,9 +151,9 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
 - Anthony Hermanto (A0269607R)
   - Integration Tests:
     - HomePage Filters and Pagination Integration Test
-      - `client/src/__tests__/pages/homepage-filters-pagination.int.test.js`
+      - `client/src/__tests__/integration/homepage-filters-pagination.int.test.js`
     - Cart and Checkout Integration Test
-      - `client/src/__tests__/pages/cart-checkout.int.test.js`
+      - `client/src/__tests__/integration/cart-checkout.int.test.js`
     - Payment Routes Integration Test
       - `controllers/__tests__/payment.routes.int.test.js`
   - UI Tests (Playwright):
