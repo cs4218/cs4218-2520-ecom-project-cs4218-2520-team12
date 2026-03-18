@@ -179,4 +179,4 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
             - `ui/search.spec.ts`
     - CI/CD:
         - Playwright E2E pipeline
-            - `.github/workflows/playwright.yml`
+            - `.github/workflows/playwright-ci.yml`
