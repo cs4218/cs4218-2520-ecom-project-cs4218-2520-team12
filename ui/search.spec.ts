@@ -50,6 +50,57 @@ const submitSearch = async (page: Page, keyword: string): Promise<void> => {
 };
 
 test.describe("MS2 - Search Flow", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.route("**/api/v1/category/get-category", async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ success: true, category: [] }),
+            });
+        });
+
+        await page.route("**/api/v1/product/search/*", async (route) => {
+            const keyword = decodeURIComponent(
+                route.request().url().split("/").pop() ?? "",
+            ).toLowerCase();
+
+            const hasResult = ["phone", "iphone", "laptop", "smart"].some(
+                (token) => keyword.includes(token),
+            );
+
+            const results = hasResult
+                ? [
+                      {
+                          _id: "search-001",
+                          name: "Search Phone",
+                          slug: "search-phone",
+                          description:
+                              "Deterministic search result for Playwright tests",
+                          price: 499,
+                      },
+                  ]
+                : [];
+
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify(results),
+            });
+        });
+
+        await page.route("**/api/v1/product/product-photo/*", async (route) => {
+            const png = Buffer.from(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+                "base64",
+            );
+            await route.fulfill({
+                status: 200,
+                contentType: "image/png",
+                body: png,
+            });
+        });
+    });
+
     /**
      * Test Case: Search Success Flow
      *
