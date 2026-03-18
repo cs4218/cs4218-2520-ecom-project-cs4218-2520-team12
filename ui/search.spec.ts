@@ -78,11 +78,14 @@ test.describe("MS2 - Search Flow", () => {
 
         // Act
         for (let index = 0; index < SUCCESS_KEYWORDS.length; index += 1) {
+            const keyword = SUCCESS_KEYWORDS[index];
+            const normalizedKeyword = keyword.trim().toLowerCase();
+
             if (index > 0) {
                 await page.goto(HOME_PATH);
             }
 
-            await submitSearch(page, SUCCESS_KEYWORDS[index]);
+            await submitSearch(page, keyword);
             await expect(
                 page.getByRole("heading", { name: /Search Resu/i }),
             ).toBeVisible();
@@ -110,6 +113,53 @@ test.describe("MS2 - Search Flow", () => {
             await expect(firstResultCard).toBeVisible();
             await expect(firstProductName).toBeVisible();
             await expect(firstProductPrice).toBeVisible();
+
+            let hasRelevantMatch = false;
+            const resultCount = await resultCards.count();
+
+            for (
+                let resultIndex = 0;
+                resultIndex < resultCount;
+                resultIndex += 1
+            ) {
+                const resultCard = resultCards.nth(resultIndex);
+                if (!(await resultCard.isVisible())) {
+                    continue;
+                }
+
+                const cardName = (
+                    await resultCard.getByRole("heading").first().innerText()
+                )
+                    .trim()
+                    .toLowerCase();
+
+                const cardTexts = resultCard.locator("p.card-text");
+                const textCount = await cardTexts.count();
+                let cardDescription = "";
+
+                for (let textIndex = 0; textIndex < textCount; textIndex += 1) {
+                    const text = (await cardTexts.nth(textIndex).innerText())
+                        .trim()
+                        .toLowerCase();
+
+                    if (text && !text.includes("$")) {
+                        cardDescription = text;
+                        break;
+                    }
+                }
+
+                if (
+                    cardName.includes(normalizedKeyword) ||
+                    cardDescription.includes(normalizedKeyword)
+                ) {
+                    hasRelevantMatch = true;
+                    break;
+                }
+            }
+
+            if (!hasRelevantMatch) {
+                continue;
+            }
 
             foundResults = true;
             break;
