@@ -32,18 +32,30 @@
 const request = require("supertest");
 const express = require("express");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const authRoutes = require("../../routes/authRoute").default;
 const User = require("../../models/userModel").default;
 
+const TEST_DB_NAME = `ms2-auth-register-${Date.now()}`;
+
+jest.setTimeout(30000);
+
 describe("Register Controller + User Model Integration", () => {
-  let mongoServer;
   let app;
 
   beforeAll(async () => {
     process.env.JWT_SECRET = process.env.JWT_SECRET || "test-jwt-secret";
-    mongoServer = await MongoMemoryServer.create();
-    await mongoose.connect(mongoServer.getUri());
+    if (!process.env.MONGO_URL) {
+      throw new Error("MONGO_URL must be defined for integration tests.");
+    }
+
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+
+    await mongoose.connect(process.env.MONGO_URL, {
+      dbName: TEST_DB_NAME,
+      serverSelectionTimeoutMS: 20000,
+    });
 
     app = express();
     app.use(express.json());
@@ -51,13 +63,16 @@ describe("Register Controller + User Model Integration", () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    await mongoServer.stop();
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.dropDatabase();
+      await mongoose.disconnect();
+    }
   });
 
   afterEach(async () => {
-    await User.deleteMany({});
+    if (mongoose.connection.readyState !== 0) {
+      await User.deleteMany({});
+    }
   });
 
   // Amos Chee Tian Ee, A0273476U
