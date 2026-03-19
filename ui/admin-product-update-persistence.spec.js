@@ -2,6 +2,33 @@
 
 import { test, expect } from "@playwright/test";
 
+/**
+ * E2E Test Suite: Admin Product Update Persistence
+ *
+ * Testing Approach: Black-box End-to-End Testing
+ *
+ * Rationale:
+ * - Validates the complete admin product update journey through browser interactions.
+ * - Focuses on user-observable outcomes (navigation, toasts, field values) instead of implementation details.
+ * - Confirms persistence behavior by reopening the edited product from the products list.
+ *
+ * Scope:
+ * - Admin logs in and navigates to admin products page
+ * - Admin opens an existing product edit page
+ * - Admin updates product name, price, and category
+ * - Admin submits update and verifies success state
+ * - Admin reopens updated product and verifies persisted values
+ * - Admin handles update failure and verifies original values remain unchanged
+ *
+ * Acceptance Criteria Coverage:
+ * - Success toast notification is shown after valid update
+ * - Updated product name appears in products list
+ * - Reopened product displays updated fields (name, category, price)
+ * - Price value is validated in numeric format for input display
+ * - Navigation flow (login → products → update → products → reopen) works without errors
+ * - Failure scenario shows error toast and does not persist attempted changes
+ */
+
 const slugify = (value) =>
   value
     .toLowerCase()
@@ -193,6 +220,14 @@ test.describe("Admin Product Update Persistence", () => {
   test("admin updates product details and sees persisted values on reopen", async ({
     page,
   }) => {
+    /**
+     * Scenario: Successful update persistence
+     * 1) Admin logs in
+     * 2) Admin opens product edit page from products list
+     * 3) Admin updates name, price, category and submits
+     * 4) Success toast and redirect to products list
+     * 5) Reopen updated product and verify persisted fields
+     */
     await page.goto("/login");
 
     await page.getByPlaceholder("Enter Your Email ").fill(adminUser.email);
@@ -250,6 +285,13 @@ test.describe("Admin Product Update Persistence", () => {
   test("admin sees update error and original product remains unchanged", async ({
     page,
   }) => {
+    /**
+     * Scenario: Failed update should not persist
+     * 1) Override update API to return failure response
+     * 2) Admin attempts product update
+     * 3) Error toast appears and user remains on edit page
+     * 4) Reopen product from products list and verify original values remain
+     */
     await page.unroute("**/api/v1/product/update-product/*");
     await page.route("**/api/v1/product/update-product/*", async (route) => {
       await route.fulfill({
