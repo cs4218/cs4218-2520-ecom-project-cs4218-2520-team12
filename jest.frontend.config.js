@@ -23,6 +23,7 @@ module.exports = {
     testMatch: [
         "<rootDir>/client/src/__tests__/pages/*.test.js",
         "<rootDir>/client/src/__tests__/integration/*.test.js",
+        "<rootDir>/client/src/__tests__/integration/*.spec.js",
         "<rootDir>/client/src/pages/**/*.test.js",
     ],
 
