@@ -8,6 +8,7 @@ module.exports = {
     // which test to run
     testMatch: [
         "<rootDir>/controllers/__tests__/*.test.js",
+        "<rootDir>/controllers/__tests__/*.int.test.js",
         "<rootDir>/models/__tests__/*.test.js",
         "<rootDir>/tests/integration/*.int.test.js",
     ],
