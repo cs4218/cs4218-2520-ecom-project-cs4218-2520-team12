@@ -180,3 +180,17 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
     - CI/CD:
         - Playwright E2E pipeline
             - `.github/workflows/playwright-ci.yml`
+
+- Snodgrass Eliot Peter (A0269684H)
+    - Integration Tests:
+        - Product-Category Relationship Integration Test
+            - `controllers/__tests__/product-category-relationship.int.test.js`
+        - Create Category API Integration Test
+            - `client/src/__tests__/integration/createCategory-api-integration.int.test.js`
+        - Create Product with Category Integration Test
+            - `client/src/__tests__/integration/createProduct-category-integration.int.test.js`
+    - UI Tests (Playwright):
+        - Admin Product Update Persistence End-to-End Test
+            - `ui/admin-product-update-persistence.spec.js`
+        - Admin Category and Product Creation End-to-End Test
+            - `ui/admin-category-product-creation.spec.js`
