@@ -180,3 +180,8 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
     - CI/CD:
         - Playwright E2E pipeline
             - `.github/workflows/playwright-ci.yml`
+
+- Snodgrass Eliot Peter (A0269684H)
+    - UI Tests (Playwright):
+        - Admin Product Update Persistence End-to-End Test
+            - `ui/admin-product-update-persistence.spec.js`
