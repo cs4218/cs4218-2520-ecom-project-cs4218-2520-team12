@@ -180,3 +180,29 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
     - CI/CD:
         - Playwright E2E pipeline
             - `.github/workflows/playwright-ci.yml`
+
+- Amos Chee Tian Ee (A0273476U)
+    - Integration Tests:
+        - User Registration Controller and Model Integration Test
+            - `controllers/__tests__/auth-register-controller-model.int.test.js`
+        - User Login Controller and Model Integration Test
+            - `controllers/__tests__/auth-login-controller-model.int.test.js`
+        - Password Reset (Forgot Password) Controller Integration Test
+            - `controllers/__tests__/auth-forgot-password.int.test.js`
+        - Protected Routes Middleware and Controller Integration Test
+            - `controllers/__tests__/auth-testcontroller-protected.int.test.js`
+        - User Registration Page Integration Test
+            - `client/src/__tests__/integration/register-page.integration.spec.js`
+        - User Login Page Integration Test
+            - `client/src/__tests__/integration/login-page.integration.spec.js`
+    - UI Tests (Playwright):
+        - User Registration Success Flow End-to-End Test
+            - `ui/register-success.spec.js`
+        - User Login Success Flow End-to-End Test
+            - `ui/login-success.spec.js`
+        - User Login Failure Scenarios End-to-End Test
+            - `ui/login-failure.spec.js`
+        - Authenticated Dashboard Navigation End-to-End Test
+            - `ui/dashboard-nav.spec.js`
+        - User Menu Navigation and Interactions End-to-End Test
+            - `ui/user-menu.spec.js`
