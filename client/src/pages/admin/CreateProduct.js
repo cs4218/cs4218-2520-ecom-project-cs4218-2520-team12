@@ -18,6 +18,43 @@ const CreateProduct = () => {
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
 
+  const validateRequiredFields = () => {
+    if (!name?.trim()) {
+      toast.error("Name is required");
+      return false;
+    }
+    if (!description?.trim()) {
+      toast.error("Description is required");
+      return false;
+    }
+    if (!price?.toString().trim()) {
+      toast.error("Price is required");
+      return false;
+    }
+    if (!category) {
+      toast.error("Category is required");
+      return false;
+    }
+    if (!quantity?.toString().trim()) {
+      toast.error("Quantity is required");
+      return false;
+    }
+    return true;
+  };
+
+  const handlePhotoChange = (e) => {
+    const selectedPhoto = e.target.files && e.target.files[0];
+    if (!selectedPhoto) return;
+
+    if (selectedPhoto.size > 1024 * 1024) {
+      toast.error("Photo should be less than 1MB");
+      setPhoto("");
+      return;
+    }
+
+    setPhoto(selectedPhoto);
+  };
+
   //get all category
   const getAllCategory = async () => {
     try {
@@ -38,6 +75,7 @@ const CreateProduct = () => {
   //create product function
   const handleCreate = async (e) => {
     e.preventDefault();
+    if (!validateRequiredFields()) return;
     try {
       const productData = new FormData();
       productData.append("name", name);
@@ -95,7 +133,7 @@ const CreateProduct = () => {
                     type="file"
                     name="photo"
                     accept="image/*"
-                    onChange={(e) => setPhoto(e.target.files[0])}
+                    onChange={handlePhotoChange}
                     hidden
                   />
                 </label>

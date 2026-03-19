@@ -151,9 +151,9 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
 - Anthony Hermanto (A0269607R)
     - Integration Tests:
         - HomePage Filters and Pagination Integration Test
-            - `client/src/__tests__/pages/homepage-filters-pagination.int.test.js`
+            - `client/src/__tests__/integration/homepage-filters-pagination.int.test.js`
         - Cart and Checkout Integration Test
-            - `client/src/__tests__/pages/cart-checkout.int.test.js`
+            - `client/src/__tests__/integration/cart-checkout.int.test.js`
         - Payment Routes Integration Test
             - `controllers/__tests__/payment.routes.int.test.js`
     - UI Tests (Playwright):
@@ -180,6 +180,20 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
     - CI/CD:
         - Playwright E2E pipeline
             - `.github/workflows/playwright-ci.yml`
+
+- Snodgrass Eliot Peter (A0269684H)
+    - Integration Tests:
+        - Product-Category Relationship Integration Test
+            - `controllers/__tests__/product-category-relationship.int.test.js`
+        - Create Category API Integration Test
+            - `client/src/__tests__/integration/createCategory-api-integration.int.test.js`
+        - Create Product with Category Integration Test
+            - `client/src/__tests__/integration/createProduct-category-integration.int.test.js`
+    - UI Tests (Playwright):
+        - Admin Product Update Persistence End-to-End Test
+            - `ui/admin-product-update-persistence.spec.js`
+        - Admin Category and Product Creation End-to-End Test
+            - `ui/admin-category-product-creation.spec.js`
 
 - Amos Chee Tian Ee (A0273476U)
     - Integration Tests:
