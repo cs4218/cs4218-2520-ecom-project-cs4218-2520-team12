@@ -47,6 +47,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="text"
+              aria-label="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="form-control"
@@ -59,6 +60,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="email"
+              aria-label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-control"
@@ -70,6 +72,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="password"
+              aria-label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-control"
@@ -81,6 +84,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="text"
+              aria-label="Phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="form-control"
@@ -92,6 +96,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="text"
+              aria-label="Address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="form-control"
@@ -103,6 +108,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="Date"
+              aria-label="Date of Birth"
               value={DOB}
               onChange={(e) => setDOB(e.target.value)}
               className="form-control"
@@ -114,6 +120,7 @@ const Register = () => {
           <div className="mb-3">
             <input
               type="text"
+              aria-label="Security Answer"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               className="form-control"

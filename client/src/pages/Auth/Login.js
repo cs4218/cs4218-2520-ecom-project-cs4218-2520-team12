@@ -57,6 +57,7 @@ const Login = () => {
           <div className="mb-3">
             <input
               type="email"
+              aria-label="Email"
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -69,6 +70,7 @@ const Login = () => {
           <div className="mb-3">
             <input
               type="password"
+              aria-label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-control"
