@@ -269,11 +269,12 @@ describe("CreateProduct Component", () => {
             fireEvent.change(fileInput, { target: { files: [largeFile] } });
         });
 
-        // Assert - file is still uploaded (component doesn't validate size)
-        // This test documents current behavior - size validation could be added
+        // Assert - large file is rejected by validation
         await waitFor(() => {
-            expect(screen.getByText("large-image.jpg")).toBeInTheDocument();
+            expect(toast.error).toHaveBeenCalledWith("Photo should be less than 1MB");
         });
+        expect(screen.queryByText("large-image.jpg")).not.toBeInTheDocument();
+        expect(screen.queryByAltText("product_photo")).not.toBeInTheDocument();
     });
 
     it("handleCreate_validData_createsProduct", async () => {
@@ -289,6 +290,9 @@ describe("CreateProduct Component", () => {
 
         await waitFor(() => {
             expect(screen.getByPlaceholderText(/write a name/i)).toBeInTheDocument();
+        });
+        await waitFor(() => {
+            expect(screen.getByText("Electronics")).toBeInTheDocument();
         });
 
         // Act - fill out form
@@ -309,13 +313,17 @@ describe("CreateProduct Component", () => {
             const categorySelect = screen.getByTestId("Select a category");
             fireEvent.change(categorySelect, { target: { value: "cat1" } });
 
-            const shippingSelect = screen.getByTestId("Select Shipping");
+            const shippingSelect = screen.getByTestId(/Select Shipping/);
             fireEvent.change(shippingSelect, { target: { value: "1" } });
 
             const file = new File(["content"], "laptop.jpg", { type: "image/jpeg" });
             const uploadLabel = screen.getByText(/Upload Photo/i).closest("label");
             const fileInput = uploadLabel.querySelector("input[type='file']");
             fireEvent.change(fileInput, { target: { files: [file] } });
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId("Select a category")).toHaveValue("cat1");
         });
 
         const createButton = screen.getByRole("button", { name: /CREATE PRODUCT/i });
@@ -336,7 +344,7 @@ describe("CreateProduct Component", () => {
     it("handleCreate_success_navigatesToProducts", async () => {
         // Arrange
         axios.get.mockResolvedValueOnce({
-            data: { success: true, category: [] },
+            data: { success: true, category: [{ _id: "cat1", name: "Electronics" }] },
         });
         axios.post.mockResolvedValueOnce({
             data: { success: true }, // success: true triggers success toast
@@ -347,12 +355,34 @@ describe("CreateProduct Component", () => {
         await waitFor(() => {
             expect(screen.getByRole("button", { name: /CREATE PRODUCT/i })).toBeInTheDocument();
         });
+        await waitFor(() => {
+            expect(screen.getByText("Electronics")).toBeInTheDocument();
+        });
 
         const createButton = screen.getByRole("button", { name: /CREATE PRODUCT/i });
 
         // Act
         await act(async () => {
+            fireEvent.change(screen.getByPlaceholderText(/write a name/i), {
+                target: { value: "Laptop Pro" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a description/i), {
+                target: { value: "High performance laptop" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a Price/i), {
+                target: { value: "1500" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a quantity/i), {
+                target: { value: "10" },
+            });
+            fireEvent.change(screen.getByTestId("Select a category"), {
+                target: { value: "cat1" },
+            });
             fireEvent.click(createButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId("Select a category")).toHaveValue("cat1");
         });
 
         // Assert
@@ -365,7 +395,7 @@ describe("CreateProduct Component", () => {
     it("handleCreate_apiError_showsErrorToast", async () => {
         // Arrange
         axios.get.mockResolvedValueOnce({
-            data: { success: true, category: [] },
+            data: { success: true, category: [{ _id: "cat1", name: "Electronics" }] },
         });
         axios.post.mockRejectedValueOnce(new Error("API error"));
 
@@ -374,12 +404,34 @@ describe("CreateProduct Component", () => {
         await waitFor(() => {
             expect(screen.getByRole("button", { name: /CREATE PRODUCT/i })).toBeInTheDocument();
         });
+        await waitFor(() => {
+            expect(screen.getByText("Electronics")).toBeInTheDocument();
+        });
 
         const createButton = screen.getByRole("button", { name: /CREATE PRODUCT/i });
 
         // Act
         await act(async () => {
+            fireEvent.change(screen.getByPlaceholderText(/write a name/i), {
+                target: { value: "Laptop Pro" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a description/i), {
+                target: { value: "High performance laptop" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a Price/i), {
+                target: { value: "1500" },
+            });
+            fireEvent.change(screen.getByPlaceholderText(/write a quantity/i), {
+                target: { value: "10" },
+            });
+            fireEvent.change(screen.getByTestId("Select a category"), {
+                target: { value: "cat1" },
+            });
             fireEvent.click(createButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId("Select a category")).toHaveValue("cat1");
         });
 
         // Assert
@@ -393,10 +445,6 @@ describe("CreateProduct Component", () => {
         axios.get.mockResolvedValueOnce({
             data: { success: true, category: [] },
         });
-        axios.post.mockResolvedValueOnce({
-            data: { success: false },
-        });
-
         renderWithRouter();
 
         await waitFor(() => {
@@ -410,13 +458,11 @@ describe("CreateProduct Component", () => {
             fireEvent.click(createButton);
         });
 
-        // Assert - FormData is created with empty values
+        // Assert - validation blocks API submission
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
-                "/api/v1/product/create-product",
-                expect.any(FormData)
-            );
+            expect(toast.error).toHaveBeenCalledWith("Name is required");
         });
+        expect(axios.post).not.toHaveBeenCalled();
     });
 
     it("shippingDropdown_rendered_hasYesNoOptions", async () => {
@@ -430,7 +476,7 @@ describe("CreateProduct Component", () => {
 
         // Assert
         await waitFor(() => {
-            const shippingSelect = screen.getByTestId("Select Shipping");
+            const shippingSelect = screen.getByTestId(/Select Shipping/);
             expect(shippingSelect).toBeInTheDocument();
             expect(screen.getByText("Yes")).toBeInTheDocument();
             expect(screen.getByText("No")).toBeInTheDocument();
