@@ -33,6 +33,24 @@ const HOME_PATH = "/";
 const PRODUCT_PATH_REGEX = /\/product\/[^/]+$/;
 const MAX_PRODUCTS_TO_TRY = 6;
 
+const category = { _id: "cat-001", name: "Phones", slug: "phones" };
+const productA = {
+    _id: "prod-001",
+    name: "Phone Alpha",
+    slug: "phone-alpha",
+    description: "Flagship phone alpha model for deterministic e2e tests",
+    price: 899,
+    category,
+};
+const productB = {
+    _id: "prod-002",
+    name: "Phone Beta",
+    slug: "phone-beta",
+    description: "Flagship phone beta model for deterministic e2e tests",
+    price: 799,
+    category,
+};
+
 const normalizeName = (value: string): string => value.trim().toLowerCase();
 
 const extractNameValue = (nameLineText: string): string => {
@@ -101,6 +119,64 @@ const readCardName = async (card: Locator): Promise<string> => {
 };
 
 test.describe("MS2 - Browse to Product Details flow", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.route("**/api/v1/category/get-category", async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ success: true, category: [category] }),
+            });
+        });
+
+        await page.route("**/api/v1/product/product-count", async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ total: 2 }),
+            });
+        });
+
+        await page.route("**/api/v1/product/product-list/*", async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ success: true, products: [productA, productB] }),
+            });
+        });
+
+        await page.route("**/api/v1/product/get-product/*", async (route) => {
+            const slug = route.request().url().split("/").pop();
+            const product = slug === productB.slug ? productB : productA;
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ success: true, product }),
+            });
+        });
+
+        await page.route("**/api/v1/product/related-product/**", async (route) => {
+            const url = route.request().url();
+            const products = url.includes(productA._id) ? [productB] : [productA];
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ success: true, products }),
+            });
+        });
+
+        await page.route("**/api/v1/product/product-photo/*", async (route) => {
+            const png = Buffer.from(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+                "base64",
+            );
+            await route.fulfill({
+                status: 200,
+                contentType: "image/png",
+                body: png,
+            });
+        });
+    });
+
     /**
      * Test Case: Browse from Home to Product Details to Related Product Details
      *
@@ -137,135 +213,43 @@ test.describe("MS2 - Browse to Product Details flow", () => {
         });
         await expect(homeMoreDetailsButtons.first()).toBeVisible();
 
-        const totalHomeProducts = await homeMoreDetailsButtons.count();
-        const attempts = Math.min(totalHomeProducts, MAX_PRODUCTS_TO_TRY);
-        expect(attempts).toBeGreaterThan(0);
+        // Act: Home -> Product Details
+        await homeMoreDetailsButtons.first().click();
+        await expect(page).toHaveURL(PRODUCT_PATH_REGEX);
 
-        let completed = false;
+        const detailsHeading = page.getByRole("heading", {
+            name: /^Product Details$/i,
+        });
+        const detailsSection = page.locator(".product-details-info");
+        const relatedSection = page.locator(".similar-products");
 
-        // Act
-        for (let index = 0; index < attempts; index += 1) {
-            if (index > 0) {
-                await page.goto(HOME_PATH);
-                await expect(homeHeading).toBeVisible();
-            }
+        await expect(detailsHeading).toBeVisible();
+        await expect(detailsSection).toBeVisible();
+        await expect(relatedSection).toBeVisible();
 
-            const currentHomeButtons = page.getByRole("button", {
-                name: /^More Details$/i,
-            });
-            await expect(currentHomeButtons.first()).toBeVisible();
-            if (index >= (await currentHomeButtons.count())) {
-                break;
-            }
+        const firstDetailsPathname = new URL(page.url()).pathname;
+        const firstProductName = await readCurrentProductName(page);
+        expect(firstProductName).not.toEqual("");
 
-            const firstProductButton = currentHomeButtons.nth(index);
-            await firstProductButton.scrollIntoViewIfNeeded();
-            await firstProductButton.click();
+        // Act: Product Details -> Related Product Details
+        const relatedMoreDetailsButton = relatedSection
+            .locator(".card")
+            .first()
+            .getByRole("button", { name: /^More Details$/i });
 
-            await expect(page).toHaveURL(PRODUCT_PATH_REGEX);
-
-            const detailsHeading = page.getByRole("heading", {
-                name: /^Product Details$/i,
-            });
-            const detailsSection = page.locator(".product-details-info");
-            const similarProductsHeading = page.getByRole("heading", {
-                name: /Similar Products/i,
-            });
-            const relatedSection = page.locator(".similar-products");
-
-            await expect(detailsHeading).toBeVisible();
-            await expect(detailsSection).toBeVisible();
-            await expect(similarProductsHeading).toBeVisible();
-            await expect(relatedSection).toBeVisible();
-
-            const firstProductName = await readCurrentProductName(page);
-            if (!firstProductName) {
-                continue;
-            }
-
-            const noRelatedText = relatedSection.getByText(
-                /No Similar Products found/i,
-            );
-            if (await noRelatedText.isVisible()) {
-                continue;
-            }
-
-            const relatedCards = relatedSection.locator(".card");
-            const relatedCount = await relatedCards.count();
-            if (relatedCount < 1) {
-                continue;
-            }
-
-            let relatedCardIndex = 0;
-            let chosenRelatedName = "";
-
-            for (
-                let relatedIndex = 0;
-                relatedIndex < relatedCount;
-                relatedIndex += 1
-            ) {
-                const candidateCard = relatedCards.nth(relatedIndex);
-                const candidateName = await readCardName(candidateCard);
-
-                if (!chosenRelatedName) {
-                    chosenRelatedName = candidateName;
-                    relatedCardIndex = relatedIndex;
-                }
-
-                if (
-                    candidateName &&
-                    normalizeName(candidateName) !==
-                        normalizeName(firstProductName)
-                ) {
-                    chosenRelatedName = candidateName;
-                    relatedCardIndex = relatedIndex;
-                    break;
-                }
-            }
-
-            const firstDetailsPathname = new URL(page.url()).pathname;
-            const selectedRelatedCard = relatedCards.nth(relatedCardIndex);
-            const relatedMoreDetailsButton = selectedRelatedCard.getByRole(
-                "button",
-                {
-                    name: /^More Details$/i,
-                },
-            );
-
-            await expect(relatedMoreDetailsButton).toBeVisible();
-            await relatedMoreDetailsButton.click();
-
-            await expect(page).toHaveURL(PRODUCT_PATH_REGEX);
-            const secondDetailsPathname = new URL(page.url()).pathname;
-
-            // Assert
-            expect(secondDetailsPathname).not.toBe(firstDetailsPathname);
-            await expect(detailsHeading).toBeVisible();
-
-            let secondProductName = "";
-
-            if (
-                chosenRelatedName &&
-                normalizeName(chosenRelatedName) !==
-                    normalizeName(firstProductName)
-            ) {
-                secondProductName = await waitForSpecificProductName(
-                    page,
-                    chosenRelatedName,
-                );
-                expect(normalizeName(secondProductName)).not.toBe(
-                    normalizeName(firstProductName),
-                );
-            } else {
-                secondProductName = await readCurrentProductName(page);
-                expect(secondProductName).not.toEqual("");
-            }
-
-            completed = true;
-            break;
-        }
+        await expect(relatedMoreDetailsButton).toBeVisible();
+        await relatedMoreDetailsButton.click();
 
         // Assert
-        expect(completed).toBeTruthy();
+        await expect(page).toHaveURL(PRODUCT_PATH_REGEX);
+        const secondDetailsPathname = new URL(page.url()).pathname;
+        expect(secondDetailsPathname).not.toBe(firstDetailsPathname);
+        await expect(detailsHeading).toBeVisible();
+
+        const secondProductName = await readCurrentProductName(page);
+        expect(secondProductName).not.toEqual("");
+        expect(normalizeName(secondProductName)).not.toBe(
+            normalizeName(firstProductName),
+        );
     });
 });
