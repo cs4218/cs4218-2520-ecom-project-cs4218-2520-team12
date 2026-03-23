@@ -6,3 +6,4 @@ node_modules
 /coverage/
 .env
 sonar-project.local.properties
+/performance-testing-users/
