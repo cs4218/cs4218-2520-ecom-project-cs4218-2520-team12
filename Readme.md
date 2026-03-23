@@ -221,6 +221,26 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
     - User Menu Navigation and Interactions End-to-End Test
       - `ui/user-menu.spec.js`
 
+- Wong An Wei (A0273528X)
+  - Integration Tests:
+    - Protected Routes Integration Test
+      - `client/src/__tests__/integration/protected-routes.int.test.js`
+    - User Profile Integration Test
+      - `client/src/__tests__/integration/profile.int.test.js`
+    - User Orders Integration Test
+      - `client/src/__tests__/integration/order.int.test.js`
+    - Admin View Users Integration Test
+      - `client/src/__tests__/integration/admin-view-users.int.test.js`
+  - UI Tests (Playwright):
+    - Protected Routes End-to-End Test
+      - `ui/protected-routes.e2e.spec.js`
+    - User Profile End-to-End Test
+      - `ui/profile.e2e.spec.js`
+    - User Orders End-to-End Test
+      - `ui/order.e2e.spec.js`
+    - Admin View Users End-to-End Test
+      - `ui/admin-view-users.e2e.spec.js`
+
 ## 9. MS3 Workload Distribution
 
 - Anthony Hermanto (A0269607R)
