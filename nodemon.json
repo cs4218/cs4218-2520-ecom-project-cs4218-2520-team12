@@ -1,0 +1,20 @@
+{
+    "watch": [
+        "server.js",
+        "routes",
+        "controllers",
+        "models",
+        "middlewares",
+        "helpers",
+        "config"
+    ],
+    "ignore": [
+        "performance/**",
+        "performance/results/**",
+        "playwright-report/**",
+        "test-results/**",
+        "coverage/**"
+    ],
+    "ext": "js,mjs,cjs,json",
+    "exec": "node --experimental-default-type=module server.js"
+}
