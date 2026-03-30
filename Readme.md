@@ -251,3 +251,8 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
       - `load-testing/k6/search-load-test.js`
     - Load Testing for Checkout Process (Login -> Payment)
       - `load-testing/k6/checkout-load-test.js`
+
+- Snodgrass Eliot Peter (A0269684H)
+  - Stress testing
+    - Stress Testing for Product Discovery Breakpoint (Browse/Search/Filter)
+      - `stress-testing/k6/discovery-stress-test.js`
