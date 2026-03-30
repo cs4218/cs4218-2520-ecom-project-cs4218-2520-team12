@@ -7,3 +7,4 @@ node_modules
 .env
 sonar-project.local.properties
 /performance-testing-users/
+package-lock.json
