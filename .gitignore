@@ -8,3 +8,5 @@ node_modules
 sonar-project.local.properties
 /performance-testing-users/
 package-lock.json
+/stress-testing/results/
+/stress-testing/tools/

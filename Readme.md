@@ -256,3 +256,9 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
   - Stress testing
     - Stress Testing for Product Discovery Breakpoint (Browse/Search/Filter)
       - `stress-testing/k6/discovery-stress-test.js`
+    - Stress Testing for Authentication and Session Handling (Login/Token Validation)
+      - `stress-testing/k6/auth-session-stress-test.js`
+    - Stress Testing for Checkout Transaction Resilience (Login->Payment)
+      - `stress-testing/k6/checkout-transaction-stress-test.js`
+    - Stress Testing for Admin Catalog Mutation Integrity (Create/Update/Delete)
+      - `stress-testing/k6/admin-catalog-mutation-stress-test.js`
