@@ -4,7 +4,7 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 
 const users = new SharedArray('users', function () {
-    return open('../../performance-testing-users/users.csv').split('\n').slice(1).map(line => {
+    return open('../../data/users.csv').split('\n').slice(1).map(line => {
         const parts = line.split(',');
         return {
             email: parts[1],
