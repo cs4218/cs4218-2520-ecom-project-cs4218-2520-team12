@@ -46,9 +46,9 @@ export const brainTreePaymentController = async (req, res) => {
           submitForSettlement: true,
         },
       },
-      function (error, result) {
+      async function (error, result) {
         if (result) {
-          const order = new orderModel({
+          await new orderModel({
             products: cart,
             payment: result,
             buyer: req.user._id,

@@ -8,11 +8,13 @@ const FAIL_RATE_TARGET = Number(__ENV.FAIL_RATE_TARGET || 0.03);
 const CHECK_RATE_TARGET = Number(__ENV.CHECK_RATE_TARGET || 0.97);
 
 function buildStressStages(peakVus) {
-    // Keep a similar curve to original run while scaling automatically by peak.
-    const l1 = Math.max(50, Math.floor(peakVus * 0.25));
-    const l2 = Math.max(100, Math.floor(peakVus * 0.5));
-    const l3 = Math.max(150, Math.floor(peakVus * 0.7));
-    const l4 = Math.max(200, Math.floor(peakVus * 0.85));
+    // Snodgrass Eliot Peter, A0269684H
+    // Bug fix: Math.max floors were clamping stages above peakVus for small peaks,
+    // causing all low-VU runs to actually ramp to 200 VUs before dropping back.
+    const l1 = Math.floor(peakVus * 0.25);
+    const l2 = Math.floor(peakVus * 0.5);
+    const l3 = Math.floor(peakVus * 0.7);
+    const l4 = Math.floor(peakVus * 0.85);
 
     return [
         { duration: '30s', target: l1 },
