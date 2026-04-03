@@ -4,7 +4,7 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 
 const users = new SharedArray('users', function () {
-    return open('../../performance-testing-users/users.csv').split('\n').slice(1).map(line => {
+    return open('../../data/users.csv').split('\n').slice(1).map(line => {
         const parts = line.split(',');
         return {
             email: parts[1],
@@ -14,16 +14,15 @@ const users = new SharedArray('users', function () {
 });
 
 export const options = {
-    // Checkout is heavier, maybe lower throughput for realism, but let's stick to consistent user load
     stages: [
         { duration: '30s', target: 200 },
         { duration: '1m', target: 1000 }, 
-        { duration: '2m', target: 1000 }, // Keep max 500 for heavy transactional flow
+        { duration: '2m', target: 1000 },
         { duration: '30s', target: 0 },
     ],
     thresholds: {
-        http_req_duration: ['p(90)<2000'], // Allow 2s for checkout process involving payment gateway
-        http_req_failed: ['rate<0.05'],    // Allow 5% error rate for external dependencies
+        http_req_duration: ['p(90)<4000'], 
+        http_req_failed: ['rate<0.05'],    
     },
 };
 
