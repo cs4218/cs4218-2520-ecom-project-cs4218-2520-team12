@@ -38,4 +38,13 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Snodgrass Eliot Peter, A0269684H
+// Indexes to support search (regex on name/description), filter (price range, category),
+// and paginated listing (sort by createdAt) without full-collection scans under load.
+productSchema.index({ name: 1 });
+productSchema.index({ description: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ createdAt: -1 });
+
 export default mongoose.model("Products", productSchema);

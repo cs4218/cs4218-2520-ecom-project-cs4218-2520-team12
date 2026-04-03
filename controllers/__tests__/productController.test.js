@@ -837,7 +837,7 @@ describe("Product Controller", () => {
             // Arrange
             req.body = { checked: ["c1"], radio: [10, 50] };
             const mockProducts = [{ _id: "p1" }];
-            productModel.find = jest.fn().mockResolvedValue(mockProducts);
+            productModel.find = jest.fn().mockReturnValue({ select: jest.fn().mockResolvedValue(mockProducts) });
 
             // Act
             await productFiltersController(req, res);
@@ -857,7 +857,7 @@ describe("Product Controller", () => {
         test("filterProducts_noFilters_callsFindWithEmptyArgs_returns200", async () => {
             // Arrange
             req.body = { checked: [], radio: [] };
-            productModel.find = jest.fn().mockResolvedValue([]);
+            productModel.find = jest.fn().mockReturnValue({ select: jest.fn().mockResolvedValue([]) });
 
             // Act
             await productFiltersController(req, res);
@@ -871,7 +871,7 @@ describe("Product Controller", () => {
             // Arrange
             req.body = { checked: ["c1"], radio: [] };
             const mockError = new Error("db");
-            productModel.find = jest.fn().mockRejectedValue(mockError);
+            productModel.find = jest.fn().mockReturnValue({ select: jest.fn().mockRejectedValue(mockError) });
 
             // Act
             await productFiltersController(req, res);

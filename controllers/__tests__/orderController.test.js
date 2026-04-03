@@ -59,6 +59,7 @@ describe("Order Controllers (getOrdersController / getAllOrdersController / orde
 
       const query = {
         populate: jest.fn().mockReturnThis(),
+        maxTimeMS: jest.fn().mockReturnThis(),
         then: (resolve, reject) => Promise.resolve(mockOrders).then(resolve, reject),
       };
 
@@ -81,6 +82,7 @@ describe("Order Controllers (getOrdersController / getAllOrdersController / orde
       const err = new Error("db");
       const query = {
         populate: jest.fn().mockReturnThis(),
+        maxTimeMS: jest.fn().mockReturnThis(),
         then: (resolve, reject) => Promise.reject(err).then(resolve, reject),
       };
       orderModel.find = jest.fn().mockReturnValue(query);

@@ -204,10 +204,16 @@ export const updateProfileController = async (req, res) => {
 /* istanbul ignore next */
 export const getOrdersController = async (req, res) => {
   try {
+    // Snodgrass Eliot Peter, A0269684H
+    // Bug fix: added maxTimeMS to prevent the query from hanging indefinitely
+    // under connection pool saturation during high load, which caused Morgan to
+    // log "- - ms - -" (no status/time/bytes) as the connection was dropped by
+    // the client before the server ever sent a response.
     const orders = await orderModel
       .find({ buyer: req.user._id })
       .populate("products", "-photo")
-      .populate("buyer", "name");
+      .populate("buyer", "name")
+      .maxTimeMS(5000);
     res.json(orders);
   } catch (error) {
     console.log(error);
