@@ -246,11 +246,11 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
 - Anthony Hermanto (A0269607R)
   - Load testing
     - Load Testing for Browse/Homepage (Product List & Categories)
-      - `load-testing/k6/browse-load-test.js`
+      - `performance-testing/k6/load/browse-load-test.js`
     - Load Testing for Search and Filters
-      - `load-testing/k6/search-load-test.js`
+      - `performance-testing/k6/load/search-load-test.js`
     - Load Testing for Checkout Process (Login -> Payment)
-      - `load-testing/k6/checkout-load-test.js`
+      - `performance-testing/k6/load/checkout-load-test.js`
 
 - Snodgrass Eliot Peter (A0269684H)
   - Stress testing
@@ -262,3 +262,4 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
       - `stress-testing/k6/checkout-transaction-stress-test.js`
     - Stress Testing for Admin Catalog Mutation Integrity (Create/Update/Delete)
       - `stress-testing/k6/admin-catalog-mutation-stress-test.js`
+      

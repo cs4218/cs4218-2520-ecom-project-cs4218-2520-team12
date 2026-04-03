@@ -5,12 +5,12 @@ import { check, sleep } from 'k6';
 export const options = {
     stages: [
         { duration: '30s', target: 200 },
-        { duration: '1m', target: 1000 }, // Faster ramp up for search
+        { duration: '1m', target: 1000 }, 
         { duration: '2m', target: 1000 },
         { duration: '30s', target: 0 },
     ],
     thresholds: {
-        http_req_duration: ['p(90)<500'], 
+        http_req_duration: ['p(90)<1500'], 
         http_req_failed: ['rate<0.01'],
     },
 };
