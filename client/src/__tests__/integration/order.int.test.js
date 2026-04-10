@@ -182,4 +182,37 @@ describe("Order Integration (Top-Down)", () => {
     expect(consoleSpy).toHaveBeenCalled();
     expect(screen.getByRole("heading", { name: /All Orders/i })).toBeInTheDocument();
   });
+
+  // ADDED - MS3 upgrade
+  test("Orders + AuthProvider + axios: order metadata renders when products array is missing", async () => {
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        user: { name: "NoProducts", email: "noproducts@example.com" },
+        token: "valid-user-token",
+      })
+    );
+
+    axios.get.mockResolvedValueOnce({
+      data: [
+        {
+          _id: "order-3",
+          status: "Processing",
+          buyer: { name: "NoProducts" },
+          createAt: "2026-03-15T10:00:00.000Z",
+          payment: { success: true },
+        },
+      ],
+    });
+
+    renderOrdersWithProviders();
+
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/orders");
+    });
+
+    expect(await screen.findByText("NoProducts")).toBeInTheDocument();
+    expect(screen.getByText("Processing")).toBeInTheDocument();
+    expect(screen.getByText("Success")).toBeInTheDocument();
+  });
 });

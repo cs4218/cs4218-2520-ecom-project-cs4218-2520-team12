@@ -166,6 +166,50 @@ describe("updateProfileController", () => {
     });
   });
 
+  // ADDED - MS3 upgrade
+  test("missingOptionalFields_equivalence_preservesExistingValues", async () => {
+    // Strategy: EP - payload omits editable fields, so existing user values are preserved.
+
+    // Arrange
+    req.body = { password: "" };
+
+    const existingUser = {
+      _id: "user123",
+      name: "Existing Name",
+      password: "old-hash",
+      phone: "9000",
+      address: "Existing Address",
+    };
+
+    const updatedUser = {
+      _id: "user123",
+      name: "Existing Name",
+      password: "old-hash",
+      phone: "9000",
+      address: "Existing Address",
+    };
+
+    userModel.findById = jest.fn().mockResolvedValue(existingUser);
+    userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
+
+    // Act
+    await updateProfileController(req, res);
+
+    // Assert
+    expect(hashPassword).not.toHaveBeenCalled();
+    expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      "user123",
+      {
+        name: "Existing Name",
+        password: "old-hash",
+        phone: "9000",
+        address: "Existing Address",
+      },
+      { new: true }
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
   test("dbFailure_basisPath_returns400", async () => {
     // Strategy: Basis Path - try/catch error path: userModel.findById throws => 400 response.
 

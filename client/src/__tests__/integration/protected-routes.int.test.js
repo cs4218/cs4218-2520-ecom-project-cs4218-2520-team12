@@ -137,4 +137,29 @@ describe("Protected Routes Integration (Top-Down)", () => {
     });
     expect(await screen.findByTestId("admin-outlet")).toBeInTheDocument();
   });
+
+  // ADDED - MS3 upgrade
+  test("PrivateRoute + AuthProvider + nested route: token present but auth API error blocks outlet", async () => {
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        user: { name: "Duke", email: "duke@example.com" },
+        token: "valid-user-token",
+      })
+    );
+    axios.get.mockRejectedValueOnce(new Error("network"));
+
+    renderWithAuthAndRouter({
+      initialPath: "/dashboard/user",
+      protectedRouteElement: <PrivateRoute />,
+      nestedPath: "user",
+      nestedContent: <div data-testid="private-outlet">Private Outlet Content</div>,
+    });
+
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/user-auth");
+    });
+    expect(screen.getByText(/redirecting to you in/i)).toBeInTheDocument();
+    expect(screen.queryByTestId("private-outlet")).not.toBeInTheDocument();
+  });
 });

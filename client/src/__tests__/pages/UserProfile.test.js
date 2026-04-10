@@ -92,6 +92,65 @@ describe("Profile (User) Page", () => {
     expect(mockSetAuth).not.toHaveBeenCalled();
   });
 
+  // ADDED - MS3 upgrade
+  it("prepopulatesBoundary_nullUserFields_asEmptyStrings", async () => {
+    // Strategy: BVA - null boundary values in auth.user should normalize to empty strings.
+
+    // Arrange
+    const mockSetAuth = jest.fn();
+    useAuth.mockReturnValue([
+      {
+        user: {
+          name: "Boundary User",
+          email: "boundary@test.com",
+          phone: null,
+          address: null,
+        },
+        token: "t",
+      },
+      mockSetAuth,
+    ]);
+
+    // Act
+    render(<Profile />);
+
+    // Assert
+    expect(screen.getByPlaceholderText("Enter Your Name")).toHaveValue("Boundary User");
+    expect(screen.getByPlaceholderText(/Enter Your Email/i)).toHaveValue("boundary@test.com");
+    expect(screen.getByPlaceholderText("Enter Your Phone")).toHaveValue("");
+    expect(screen.getByPlaceholderText("Enter Your Address")).toHaveValue("");
+    expect(mockSetAuth).not.toHaveBeenCalled();
+  });
+
+  // ADDED - MS3 upgrade
+  it("emailInput_disabled_remainsUnchanged_onManualChangeAttempt", async () => {
+    // Strategy: EP - immutable field partition for disabled email input.
+
+    // Arrange
+    const mockSetAuth = jest.fn();
+    useAuth.mockReturnValue([
+      {
+        user: {
+          name: "Jane User",
+          email: "jane@test.com",
+          phone: "999",
+          address: "SG",
+        },
+        token: "t",
+      },
+      mockSetAuth,
+    ]);
+
+    // Act
+    render(<Profile />);
+    const emailInput = screen.getByPlaceholderText(/Enter Your Email/i);
+    fireEvent.change(emailInput, { target: { value: "changed@test.com" } });
+
+    // Assert
+    expect(emailInput).toBeDisabled();
+    expect(emailInput).toHaveValue("jane@test.com");
+  });
+
   it("submit_success_updatesAuth_localStorage_andShowsSuccessToast", async () => {
     // Strategy: EP + Basis Path - Valid EC: API returns updatedUser => updates auth + localStorage.
 

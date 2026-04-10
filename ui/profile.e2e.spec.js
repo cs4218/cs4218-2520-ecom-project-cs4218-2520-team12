@@ -121,4 +121,35 @@ test.describe("MS2 E2E - Profile", () => {
     expect(authState.user.name).toBe(baseUser.name);
     expect(authState.user.phone).toBe(baseUser.phone);
   });
+
+  // ADDED - MS3 upgrade
+  test("short password update attempt shows validation error and preserves local profile", async ({ page }) => {
+    await page.route("**/api/v1/auth/profile", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          errro: true,
+          error: "Passsword is required and 6 character long",
+        }),
+      });
+    });
+
+    await page.goto("/dashboard/user/profile");
+
+    await page.getByPlaceholder("Enter Your Name").fill("Profile User");
+    await page.getByPlaceholder("Enter Your Password").fill("12345");
+    await page.getByRole("button", { name: /update/i }).click();
+
+    await expect(page.getByText(/passsword is required and 6 character long/i)).toBeVisible();
+
+    const authState = await page.evaluate(() => {
+      const raw = localStorage.getItem("auth");
+      return raw ? JSON.parse(raw) : null;
+    });
+
+    expect(authState.user.name).toBe(baseUser.name);
+    expect(authState.user.phone).toBe(baseUser.phone);
+    expect(authState.user.address).toBe(baseUser.address);
+  });
 });

@@ -135,6 +135,24 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
       expect(screen.getByTestId("spinner")).toBeInTheDocument();
       expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
     });
+
+    // ADDED - MS3 upgrade
+    it("renders Spinner when token is present but auth payload has no ok field", async () => {
+      // Strategy: EP - malformed payload partition (token valid, auth response shape invalid).
+
+      // Arrange
+      useAuth.mockReturnValue([{ user: { role: 0 }, token: "t" }, jest.fn()]);
+      axios.get.mockResolvedValue({ data: { status: "unknown" } });
+
+      // Act
+      render(<PrivateRoute />);
+
+      // Assert
+      await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/user-auth");
+      expect(screen.getByTestId("spinner")).toBeInTheDocument();
+      expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
+    });
   });
 
   describe("AdminRoute", () => {
@@ -197,6 +215,24 @@ describe("Protected Routes (PrivateRoute / AdminRoute)", () => {
 
       // Assert
       await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
+      expect(screen.getByTestId("spinner")).toBeInTheDocument();
+      expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
+    });
+
+    // ADDED - MS3 upgrade
+    it("renders Spinner when admin token is present but admin auth payload has no ok field", async () => {
+      // Strategy: EP - malformed payload partition (token valid, admin auth response shape invalid).
+
+      // Arrange
+      useAuth.mockReturnValue([{ user: { role: 1 }, token: "t" }, jest.fn()]);
+      axios.get.mockResolvedValue({ data: { status: "unknown" } });
+
+      // Act
+      render(<AdminRoute />);
+
+      // Assert
+      await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/admin-auth");
       expect(screen.getByTestId("spinner")).toBeInTheDocument();
       expect(screen.queryByTestId("outlet")).not.toBeInTheDocument();
     });

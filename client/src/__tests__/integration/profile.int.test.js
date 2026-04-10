@@ -197,4 +197,45 @@ describe("Profile Integration (Top-Down)", () => {
 
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
   });
+
+  // ADDED - MS3 upgrade
+  test("Profile + AuthProvider: disabled email remains unchanged during update submit", async () => {
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        user: {
+          name: "Jane User",
+          email: "jane@example.com",
+          phone: "999",
+          address: "Singapore",
+        },
+        token: "valid-user-token",
+      })
+    );
+
+    axios.put.mockResolvedValueOnce({
+      data: {
+        updatedUser: {
+          name: "Jane User",
+          email: "jane@example.com",
+          phone: "999",
+          address: "Singapore",
+        },
+      },
+    });
+
+    renderProfileWithProviders();
+
+    const emailInput = await screen.findByPlaceholderText(/Enter Your Email/i);
+    fireEvent.change(emailInput, { target: { value: "changed@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: /update/i }));
+
+    await waitFor(() => {
+      expect(axios.put).toHaveBeenCalledTimes(1);
+    });
+
+    expect(emailInput).toBeDisabled();
+    expect(emailInput).toHaveValue("jane@example.com");
+    expect(toast.success).toHaveBeenCalledWith("Profile Updated Successfully");
+  });
 });
