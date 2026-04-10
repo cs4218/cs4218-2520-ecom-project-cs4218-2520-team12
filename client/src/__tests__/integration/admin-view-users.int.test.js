@@ -123,4 +123,25 @@ describe("Admin View Users Integration (Top-Down)", () => {
     expect(screen.getByText(/redirecting to you in/i)).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: /All Users/i })).not.toBeInTheDocument();
   });
+
+  // ADDED - MS3 upgrade
+  test("AdminRoute + Users: token with missing role still follows admin-auth API decision", async () => {
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        user: { name: "Role Missing", email: "rolemissing@example.com" },
+        token: "valid-admin-token",
+      })
+    );
+    axios.get.mockResolvedValueOnce({ data: { ok: true } });
+
+    renderAdminUsersRoute();
+
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/admin-auth");
+    });
+
+    expect(await screen.findByRole("heading", { name: /All Users/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Admin Panel/i })).toBeInTheDocument();
+  });
 });

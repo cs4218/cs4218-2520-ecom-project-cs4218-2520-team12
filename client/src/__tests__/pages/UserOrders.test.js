@@ -188,6 +188,38 @@ describe("Orders (User) Page", () => {
     expect(screen.queryByText("Failed")).not.toBeInTheDocument();
   });
 
+  // ADDED - MS3 upgrade
+  it("missingProductsArray_equivalence_rendersOrderMetaWithoutProductCards", async () => {
+    // Strategy: EP - order metadata present while products collection is undefined.
+
+    // Arrange
+    useAuth.mockReturnValue([
+      { user: { name: "User", role: 0 }, token: "user-token" },
+      jest.fn(),
+    ]);
+
+    const mockOrders = [
+      {
+        _id: "order3",
+        status: "Processing",
+        buyer: { name: "No Product User" },
+        createAt: "2026-02-05T10:00:00Z",
+        payment: { success: true },
+      },
+    ];
+
+    axios.get.mockResolvedValueOnce({ data: mockOrders });
+
+    // Act
+    render(<Orders />);
+
+    // Assert
+    await waitFor(() => expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/orders"));
+    expect(await screen.findByText("No Product User")).toBeInTheDocument();
+    expect(screen.getByText("Success")).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /No Product/i })).not.toBeInTheDocument();
+  });
+
   it("fetchOrders_apiError_logsError_andKeepsEmptyUI", async () => {
     // Strategy: Basis Path - try/catch error path: axios throws => orders not set.
 

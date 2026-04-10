@@ -86,4 +86,15 @@ describe("Admin Users Page", () => {
 
         expect(screen.getByTestId("admin-menu")).toBeInTheDocument();
     });
+
+    // ADDED - MS3 upgrade
+    it("adminUsers_routeMismatch_doesNotRenderUsersPage", () => {
+        // Strategy: EP - invalid route partition should not resolve Users component.
+        renderWithRouter("/dashboard/admin/users-invalid");
+
+        expect(screen.queryByTestId("layout")).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("heading", { name: /All Users/i }),
+        ).not.toBeInTheDocument();
+    });
 });

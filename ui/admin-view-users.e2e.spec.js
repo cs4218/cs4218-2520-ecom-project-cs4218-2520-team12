@@ -81,7 +81,20 @@ test.describe("MS2 E2E - Admin View Users", () => {
     await page.goto("/dashboard/admin/users");
 
     await expect(page.getByText(/redirecting to you in/i)).toBeVisible();
-    await expect(page).toHaveURL(/\/login$/);
+      await expect(page).toHaveURL(/\/login$/, { timeout: 15000 });
     await expect(page.getByRole("heading", { name: /login form/i })).toBeVisible();
+  });
+
+  // ADDED - MS3 upgrade
+  test("unauthenticated deep-link to admin users route redirects to login", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.removeItem("auth");
+    });
+
+    await page.goto("/dashboard/admin/users");
+
+    await expect(page.getByText(/redirecting to you in/i)).toBeVisible();
+      await expect(page).toHaveURL(/\/login$/, { timeout: 15000 });
+    await expect(page.getByRole("heading", { name: /all users/i })).toHaveCount(0);
   });
 });

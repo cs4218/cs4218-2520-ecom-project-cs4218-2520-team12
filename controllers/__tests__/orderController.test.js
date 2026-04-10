@@ -98,6 +98,28 @@ describe("Order Controllers (getOrdersController / getAllOrdersController / orde
         error: err,
       });
     });
+
+    // ADDED - MS3 upgrade
+    test("getOrders_missingUser_partition_returns500_withoutModelCall", async () => {
+      // Strategy: EP - invalid request partition where req.user is missing.
+
+      // Arrange
+      req = { params: {}, body: {} };
+      orderModel.find = jest.fn();
+
+      // Act
+      await getOrdersController(req, res);
+
+      // Assert
+      expect(orderModel.find).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: "Error WHile Geting Orders",
+        })
+      );
+    });
   });
 
   describe("getAllOrdersController", () => {
