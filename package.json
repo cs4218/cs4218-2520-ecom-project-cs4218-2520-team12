@@ -16,7 +16,10 @@
         "test:e2e:ui": "playwright test --ui",
         "test:e2e:headed": "playwright test --headed",
         "test:e2e:debug": "playwright test --debug",
-        "playwright:install": "playwright install"
+        "playwright:install": "playwright install",
+        "test:recovery": "node performance-testing/k6/recovery/tools/run-recovery-suite.js",
+        "test:recovery:quick": "node performance-testing/k6/recovery/tools/run-recovery-suite.js --quick",
+        "test:recovery:scenario": "node performance-testing/k6/recovery/tools/run-recovery-suite.js"
     },
     "keywords": [],
     "author": "RP",
