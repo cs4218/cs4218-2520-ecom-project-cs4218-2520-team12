@@ -9,3 +9,4 @@ sonar-project.local.properties
 /performance-testing-users/
 package-lock.json
 /stress-testing/results/
+/performance-testing/results/
