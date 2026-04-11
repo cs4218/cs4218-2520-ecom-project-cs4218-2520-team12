@@ -20,6 +20,11 @@ It runs each scenario as:
   - `AUTH_EMAIL`
   - `AUTH_PASSWORD`
 
+```bash
+AUTH_EMAIL = cs4218@test.com
+AUTH_PASSWORD = cs4218@test.com
+```
+
 ## Run
 
 Run all scenarios:
