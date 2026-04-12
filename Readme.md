@@ -261,8 +261,24 @@ The link to the CI/CD workflow is given [here](https://github.com/cs4218/cs4218-
         - Stress Testing for Checkout Transaction Resilience (Login->Payment)
             - `stress-testing/k6/checkout-transaction-stress-test.js`
         - Stress Testing for Admin Catalog Mutation Integrity (Create/Update/Delete)
-            - `stress-testing/k6/admin-catalog-mutation-stress-test.js`
+            - `stress-testing/k6/admin-catalog-mutation-stress-test.js`.
+            
 - David Vicedo (A0273234J)
     - Spike Testing
         - Spike Testing for Product Listing Endpoint Stability
             - `performance-testing/k6/spike/spike-product-list.js`
+
+- Amos Chee Tian Ee (A0273476U)
+    - Recovery testing
+        - Recovery Test Suite Runner
+            - `performance-testing/k6/recovery/tools/run-recovery-suite.js`
+        - Payment Recovery Test
+            - `performance-testing/k6/recovery/payment-recovery-test.js`
+        - Order Recovery Test
+            - `performance-testing/k6/recovery/order-recovery-test.js`
+        - Auth Session Recovery Test
+            - `performance-testing/k6/recovery/auth-session-recovery-test.js`
+        - Product Availability Recovery Test
+            - `performance-testing/k6/recovery/product-recovery-test.js`
+        - Recovery Testing Documentation
+            - `performance-testing/k6/recovery/README.md`
