@@ -1,4 +1,4 @@
-
+// Anthony Hermanto, A0269607R
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
